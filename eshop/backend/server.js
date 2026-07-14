@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const rateLimit = require("express-rate-limit");
 const db = require("./database");
 const jwt = require("jsonwebtoken");
 
@@ -10,6 +11,15 @@ const SECRET_KEY = "super_secret_key_that_should_not_be_here";
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(
+  "/api",
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 200,
+    standardHeaders: "draft-8",
+    legacyHeaders: false,
+  }),
+);
 
 const userCarts = {};
 
@@ -141,12 +151,10 @@ app.put("/api/users/me", authenticateToken, (req, res) => {
 app.get("/api/products", (req, res) => {
   const searchQuery = req.query.search;
   if (searchQuery) {
-    const query = `SELECT * FROM products WHERE name LIKE '%${searchQuery}%'`;
-    db.all(query, [], (err, rows) => {
+    const query = "SELECT * FROM products WHERE name LIKE ?";
+    db.all(query, [`%${searchQuery}%`], (err, rows) => {
       if (err)
-        return res
-          .status(500)
-          .send(`<h1>Database Error</h1><p>${err.message}</p>`);
+        return res.status(500).json({ error: "Database Error" });
       res.json(rows);
     });
   } else {

@@ -6,25 +6,26 @@ import { useCart } from "../context/CartContext";
 export default function Home() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
-  const [errorHtml, setErrorHtml] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const { addToCart } = useCart();
 
   const fetchProducts = async (query = "") => {
     try {
-      setErrorHtml("");
+      setErrorMessage("");
       const res = await axios.get(
         `http://localhost:3000/api/products?search=${query}`,
       );
-      if (typeof res.data === "string" && res.data.includes("<h1>")) {
-        setErrorHtml(res.data);
+      if (!Array.isArray(res.data)) {
+        setErrorMessage("Không thể tải danh sách sản phẩm.");
         setProducts([]);
       } else {
         setProducts(res.data);
       }
     } catch (err) {
-      if (err.response && typeof err.response.data === "string") {
-        setErrorHtml(err.response.data);
-      }
+      setProducts([]);
+      setErrorMessage(
+        err?.response?.data?.error || "Không thể tải danh sách sản phẩm.",
+      );
     }
   };
 
@@ -58,18 +59,14 @@ export default function Home() {
         </form>
       </div>
 
-      {search && !errorHtml && (
+      {search && !errorMessage && (
         <div className="mb-4 text-gray-600">
-          Kết quả tìm kiếm cho:{" "}
-          <span dangerouslySetInnerHTML={{ __html: search }} />
+          Kết quả tìm kiếm cho: <span>{search}</span>
         </div>
       )}
 
-      {errorHtml ? (
-        <div
-          className="bg-red-100 p-4 rounded overflow-auto"
-          dangerouslySetInnerHTML={{ __html: errorHtml }}
-        />
+      {errorMessage ? (
+        <div className="bg-red-100 p-4 rounded overflow-auto">{errorMessage}</div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {products.map((p) => (

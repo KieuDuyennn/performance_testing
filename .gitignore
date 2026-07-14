@@ -1,0 +1,10 @@
+node_modules/
+.env
+.DS_Store
+*.mp4
+*.mov
+*.jtl
+k6-results*.json
+k6-results*.csv
+load-tests/reports/results/*.json
+load-tests/reports/results/*.csv

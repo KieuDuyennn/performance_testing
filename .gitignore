@@ -11,3 +11,5 @@ load-tests/reports/results/*.csv
 
 # NOTE: requirments/ is intentionally TRACKED so the team's plan-study.md and the
 # course briefs travel with the repo. Do not re-add `requirments/` here.
+.claude/
+CLAUDE.md

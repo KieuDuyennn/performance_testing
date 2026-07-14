@@ -8,3 +8,6 @@ k6-results*.json
 k6-results*.csv
 load-tests/reports/results/*.json
 load-tests/reports/results/*.csv
+
+# NOTE: requirments/ is intentionally TRACKED so the team's plan-study.md and the
+# course briefs travel with the repo. Do not re-add `requirments/` here.

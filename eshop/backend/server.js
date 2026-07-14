@@ -11,6 +11,13 @@ const SECRET_KEY = "super_secret_key_that_should_not_be_here";
 
 app.use(cors());
 app.use(bodyParser.json());
+
+// Rate limiter: 200 requests / 15 min / IP on the whole /api surface.
+// NOTE (perf-testing): this cap makes a 50-VU baseline or a 500-VU spike hit
+// HTTP 429 after ~200 requests. Set LOADTEST=1 to bypass it while measuring
+// performance; leave it unset for normal runs so the limiter stays a real,
+// documented "failure mode" the seminar can demonstrate.
+const LOADTEST = process.env.LOADTEST === "1" || process.env.LOADTEST === "true";
 app.use(
   "/api",
   rateLimit({
@@ -18,6 +25,7 @@ app.use(
     limit: 200,
     standardHeaders: "draft-8",
     legacyHeaders: false,
+    skip: () => LOADTEST,
   }),
 );
 

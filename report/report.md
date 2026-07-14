@@ -3,8 +3,7 @@
 **Course:** Software Testing (CS423/CSC15003) — FIT, HCMUS
 **Topic:** T05 — Performance Testing
 **System Under Test (SUT):** EShop (Node.js + Express + SQLite)
-**Traditional tools:** k6 (primary), Apache JMeter (secondary)
-**AI direction:** LLM-assisted generation of a "realistic shopping" load script from an HTTP log, followed by human audit
+**Group:** Team 09
 
 ---
 
@@ -12,9 +11,9 @@
 
 This report presents a performance testing study of **EShop**, a Node.js/SQLite e-commerce backend, carried out as part of the T05 — Performance Testing seminar. The study defines a mixed workload model covering product browsing, search, cart, and checkout, implements that model independently in both Apache JMeter and k6, and evaluates the system under a baseline load (50 virtual users) and a spike load (50 to 500 virtual users within 30 seconds). A large language model (LLM) was used to draft a "realistic shopping" load script from a captured HTTP log, which the team then audited and corrected before use — an AI-assisted supplement to the two traditional tools, not a replacement for them.
 
-The report covers the conceptual background of performance testing, the system under test, the workload model, the experimental methodology, the AI-assisted scripting workflow, the resulting measurements, and a comparative evaluation of the two tools. Tool implementation details such as installation, configuration, and execution steps are outside the scope of this report.
+The report covers the conceptual background of performance testing, the system under test, the workload model, the experimental methodology, the AI-assisted scripting workflow, the resulting measurements, and a comparative evaluation of the two tools.
 
-**Key outcomes:** [Add a summary of the baseline/spike SLO outcome and the main observed bottleneck.]
+**Key outcomes:** [TODO: summarize the baseline/spike SLO outcome and the main observed bottleneck.]
 
 ---
 
@@ -45,6 +44,22 @@ The report covers the conceptual background of performance testing, the system u
 Modern web applications must remain responsive and stable as user load grows. Functional testing verifies that a system behaves correctly for a single user or a small number of requests, but it does not reveal how a system behaves under many concurrent users, under a sudden traffic spike, or when a shared resource (such as a database connection) becomes a bottleneck. Performance testing addresses this gap by measuring response time, throughput, and error behavior under controlled, repeatable load conditions.
 
 This seminar uses **EShop**, a Node.js/Express backend with a SQLite database, as the system under test. EShop is a small e-commerce application exposing REST endpoints for product browsing, search, cart management, and checkout, secured with a JWT-based login flow.
+
+**Figure 1 — Overall Seminar Workflow**
+
+```
+EShop
+   ↓
+Workload Model
+   ↓
+JMeter + k6
+   ↓
+Baseline / Spike
+   ↓
+Performance Metrics
+   ↓
+Evaluation
+```
 
 ---
 
@@ -154,12 +169,12 @@ A sudden increase: start at 50 VU, ramp to 500 VU over 30 seconds, hold for 2 mi
 
 | Item | Value |
 |---|---|
-| CPU | [Add] |
-| RAM | [Add] |
-| Operating System | [Add] |
-| Node.js | [Add] |
-| Apache JMeter | [Add] |
-| k6 | [Add] |
+| CPU | [TODO] |
+| RAM | [TODO] |
+| Operating System | [TODO] |
+| Node.js | [TODO] |
+| Apache JMeter | [TODO] |
+| k6 | [TODO] |
 
 ### 8.2 Baseline Test
 
@@ -191,7 +206,7 @@ A sudden increase from 50 to 500 virtual users within 30 seconds, using the same
 6. **Compare the results** — present the baseline and spike outcomes for k6 and JMeter side by side.
 7. **Wrap up** — summarize the key finding and open the floor for questions.
 
-[Add expected outputs once the demonstration has been rehearsed.]
+[TODO: add expected outputs once the demonstration has been rehearsed.]
 
 ---
 
@@ -214,7 +229,7 @@ An LLM was used to draft a "realistic shopping" k6 script from a captured HTTP l
 
 ### 10.3 Human Review Process
 
-Every AI-generated script was reviewed against the real system before use. The endpoint and authentication fixes above were verified and applied directly. [Add remaining review evidence once finalized.]
+Every AI-generated script was reviewed against the real system before use. The endpoint and authentication fixes above were verified and applied directly. [TODO: add remaining review evidence once finalized.]
 
 ---
 
@@ -246,7 +261,7 @@ Every AI-generated script was reviewed against the real system before use. The e
 
 ### 11.3 Result Analysis
 
-[Add analysis covering response time and throughput trends between baseline and spike, error rate and any threshold breaches, the observed bottleneck (e.g., database contention under concurrent writes), whether the system recovered after the spike, and any other notable observations.]
+[TODO: analyze response time and throughput trends between baseline and spike, error rate and any threshold breaches, the observed bottleneck (e.g., database contention under concurrent writes), whether the system recovered after the spike, and any other notable observations.]
 
 ---
 
@@ -254,46 +269,35 @@ Every AI-generated script was reviewed against the real system before use. The e
 
 ### 12.1 Apache JMeter
 
-**Observed Strengths:** [Add strengths observed during the JMeter runs, e.g., ease of visualizing the test plan, output clarity.]
+**Observed Strengths:** [TODO: add strengths observed during the JMeter runs, e.g., ease of visualizing the test plan, output clarity.]
 
-**Observed Limitations:** [Add limitations observed, e.g., resource usage, setup effort.]
+**Observed Limitations:** [TODO: add limitations observed, e.g., resource usage, setup effort.]
 
 ### 12.2 k6
 
-**Observed Strengths:** [Add strengths observed during the k6 runs, e.g., scripting speed, CI-friendliness.]
+**Observed Strengths:** [TODO: add strengths observed during the k6 runs, e.g., scripting speed, CI-friendliness.]
 
-**Observed Limitations:** [Add limitations observed, e.g., lack of a GUI for non-technical viewers.]
+**Observed Limitations:** [TODO: add limitations observed, e.g., lack of a GUI for non-technical viewers.]
 
 ### 12.3 Overall Comparison
 
-[Summarize the comparison — ease of use, implementation effort, and suitability for this seminar — and give an overall recommendation grounded in the Section 11 results.] Neither tool is assumed superior; each served a different role in this seminar.
+[TODO: summarize the comparison — ease of use, implementation effort, and suitability for this seminar — and give an overall recommendation grounded in the Section 11 results.] Neither tool is assumed superior; each served a different role in this seminar.
 
 ---
 
 ## 13. Discussion
 
-### 13.1 Failure Modes
-
-The following failure modes describe ways the tool/system combination can mislead a tester, verified directly against the system's behavior rather than assumed:
-
-1. **Rate limiter masking real capacity.** The application-level rate limiter, if left enabled, is reached long before the system's real capacity at 50 or 500 virtual users, producing a wall of rejected requests and an artificially capped result. *Detection:* a sharp, early rise in rejected requests. *Mitigation:* disable the limiter for the duration of measurement (Section 5.2).
-2. **False-positive success on invalid lookups.** A request for a non-existent product returns a successful response with an empty body rather than an error status. *Detection:* assertions must inspect response content, not status code alone. *Mitigation:* add content-based checks for product-detail requests.
-3. **Silent search misroute.** An incorrectly formed search request can silently fall through to an unrelated route and return an empty, successful response, so a misconfigured script can report full success while testing nothing. *Detection:* verify non-trivial result counts in search responses. *Mitigation:* validate the endpoint pattern and assert on result content.
-4. **Non-expiring session tokens.** Authentication tokens do not expire once issued, so a script relying on mid-test token expiry will not observe it, and a long-running test may reuse the same token indefinitely — unrealistic compared to typical session behavior. *Detection:* inspect issued tokens for the absence of an expiry claim. *Mitigation:* treat token lifetime as an explicit test parameter rather than an inherited assumption.
-
-[Add AI-specific limitations and common mistakes, building on Section 10.3.]
-
-### 13.2 Limitations
+### 13.1 Limitations
 
 Testing is performed on a local, single-machine setup rather than a representative production deployment (no load balancing, connection pooling, or multi-instance clustering). The database's single-writer-connection model is a known architectural constraint (Section 5.2) that may dominate results in a way that would not generalize to a system built on a different database. The product catalog is small and fixed, and the traffic sample used for the AI-assisted scripting workflow (Section 10) is limited in size and partly synthetic rather than fully representative of real user behavior.
 
 This study also covers load and spike testing only (Section 4.2); soak/endurance testing, stress-to-failure testing, and scalability testing across multiple configurations are out of scope. Resource utilization monitoring may not be captured, which limits root-cause analysis to latency and error-rate evidence alone.
 
-### 13.3 Threats to Validity
+### 13.2 Threats to Validity
 
 - Running the load generator on the same host as the system under test can inflate measured latency due to shared CPU and network resources.
 - The workload mix (Section 7.1) is a reasoned assumption rather than a fully validated observation of real traffic.
-- [State whether baseline and spike were each run more than once; a single run per scenario does not account for run-to-run variance.]
+- [TODO: state whether baseline and spike were each run more than once; a single run per scenario does not account for run-to-run variance.]
 
 ---
 
@@ -301,37 +305,22 @@ This study also covers load and spike testing only (Section 4.2); soak/endurance
 
 ### 14.1 Summary
 
-[Add the SLO outcome summary for baseline and spike.]
+[TODO: add the SLO outcome summary for baseline and spike.]
 
 ### 14.2 Lessons Learned
 
-[Add lessons learned, building on the rate limiter's effect on measurement, the value of content-based assertions, and the AI-script corrections in Section 10.]
+[TODO: add lessons learned, building on the rate limiter's effect on measurement, the value of content-based assertions, and the AI-script corrections in Section 10.]
 
 ### 14.3 Recommendations
 
-[Add recommendations for extending this work, grounded in the Section 11 findings.]
+[TODO: add recommendations for extending this work, grounded in the Section 11 findings.]
 
 ### 14.4 Future Work
 
-[Add future work, e.g., soak testing, multi-instance backend testing, or extending the AI-assisted workflow to the JMeter implementation.]
+[TODO: add future work, e.g., soak testing, multi-instance backend testing, or extending the AI-assisted workflow to the JMeter implementation.]
 
 ---
 
 ## 15. References
 
-### Books
-
-[Add]
-
-### Papers
-
-[Add]
-
-### Official Documentation
-
-- [Add k6 official documentation — URL and access date]
-- [Add Apache JMeter official documentation — URL and access date]
-
-### Websites
-
-[Add]
+[TODO: list references in numbered IEEE or APA format.]

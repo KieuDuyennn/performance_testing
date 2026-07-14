@@ -1,0 +1,4 @@
+# Thư mục chứa artefact bắt tay ở Giai đoạn 2:
+#   - eshop_flow.har         (HAR xuất từ DevTools, Bước 2.1)
+#   - search_keywords.json   (mảng từ khóa cho SharedArray, Bước 2.2)
+# Giữ .gitkeep để thư mục tồn tại trong git khi chưa có file thật.

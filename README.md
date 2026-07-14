@@ -36,12 +36,22 @@ Seminar project scaffold for **Software Testing (CS423/CSC15003, FIT HCMUS)**.
 ## Quick Start
 
 ```bash
-# baseline
+# 1) Start the backend WITH the rate limiter bypassed (required for load tests).
+#    Without LOADTEST=1, the /api limiter (200 req/15min) turns any 50+ VU run
+#    into a wall of HTTP 429s and every SLO number becomes meaningless.
+cd eshop/backend && npm install && LOADTEST=1 node server.js
+
+# 2) In another terminal, run the scenarios (k6 must be installed):
+# baseline (50 VU, 5 min)
 BASE_URL=http://localhost:3000 ./scripts/run-baseline.sh
 
-# spike
+# spike (50 -> 500 VU in 30s)
 BASE_URL=http://localhost:3000 ./scripts/run-spike.sh
 ```
+
+> The k6 scripts authenticate in `setup()` using the seed account
+> `test@eshop.com` / `Test1234!` and reuse the token across VUs. Override with
+> `-e TEST_EMAIL=... -e TEST_PASSWORD=...` if you change the seed.
 
 ## Repository Layout
 

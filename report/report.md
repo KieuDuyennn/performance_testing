@@ -194,19 +194,48 @@ A sudden increase from 50 to 500 virtual users within 30 seconds, using the same
 
 ---
 
-## 9. Demo Scenario
+## 9. Demo Script
 
-> The live demonstration follows a fixed script rather than a slide deck, showing both traditional tools and the AI-assisted workflow in action.
+> This section describes only the 10-minute **Live Demo** slot of the 45-minute seminar (Pitch 10 min → Live Demo 10 min → Audience Activity 20 min → Q&A 5 min). The Pitch, the Audience Activity, and the Q&A are outside the scope of this section.
 
-1. **Introduce the objective** — state what the demo will show: a mixed workload tested with two tools, plus an AI-assisted script.
-2. **Explain the workload model** — briefly show the action mix and think time from Section 7.
-3. **Demonstrate the baseline test** — run the 50 VU baseline live in k6 and narrate the summary output as it completes.
-4. **Demonstrate the spike test** — run the 50 → 500 VU spike live in k6, pointing out the ramp and any threshold breaches.
-5. **Demonstrate the AI-assisted workflow** — show the AI-drafted script and at least one concrete correction the team made to it (Section 10).
-6. **Compare the results** — present the baseline and spike outcomes for k6 and JMeter side by side.
-7. **Wrap up** — summarize the key finding and open the floor for questions.
+### 9.1 Demo Objective
 
-[TODO: add expected outputs once the demonstration has been rehearsed.]
+The live demonstration shows the audience how the workload model defined in Section 7 is implemented and evaluated using Apache JMeter and k6, and how an AI-assisted script fits into that same workflow as a supporting artifact rather than a separate demonstration. It grounds the concepts introduced during the Pitch in an observable run of the system, and establishes the shared vocabulary — workload mix, baseline, spike, SLO — that the audience needs before designing their own workload model in the Activity that follows.
+
+### 9.2 Demo Preparation
+
+The following is confirmed ready before the seminar begins; none of it is set up live on stage:
+
+- EShop is already running.
+- The JMeter and k6 scripts for the workload model (Section 7) are already implemented and validated.
+- The AI-generated script draft is available, alongside the corrected version that will actually run.
+- A completed run of each scenario is captured in advance as a fallback.
+
+Because the complete baseline and spike scenarios exceed the available demonstration time, completed measurement results are prepared in advance as a fallback. The live demonstration focuses on illustrating the execution workflow rather than waiting for every scenario to finish.
+
+### 9.3 Live Demo Timeline
+
+| Time | Demonstration | Key Message |
+|---|---|---|
+| 0:00–1:00 | Frame the demo: one EShop workload, one testing objective, evaluated with two tools and one AI-assisted script. | One testing objective, realized through two tools and an AI-assisted script — not a tool showcase. |
+| 1:00–2:30 | Walk through the workload model — action mix and think time (Section 7) — before opening either tool. | Workload design comes before tool execution. |
+| 2:30–4:00 | Demonstrate the baseline workload using JMeter: open the GUI test plan to explain how the workload is represented, then show the results from the completed non-GUI measurement run. | JMeter expresses the same workload as a GUI-authored, non-GUI-measured plan. |
+| 4:00–5:30 | Demonstrate the ongoing baseline execution in k6; narrate the streaming summary and threshold results as they appear. | The identical workload, re-expressed as a JavaScript script — same objective, different tool. |
+| 5:30–6:30 | Trigger the spike scenario in k6 to illustrate the rapid increase in load; the completed spike results are presented immediately afterward. | The same workload model also drives the spike test; no separate script is written for it. |
+| 6:30–8:00 | Show the AI-generated performance test script and the log it was drafted from, then walk through why the version actually executed differs after human review. | AI drafts a starting point; the version that runs is the one a human reviewed and corrected. |
+| 8:00–9:00 | Place the JMeter and k6 summaries — both captured in full beforehand — side by side. | Two tools, one workload, comparable evidence — not a competition between tools. |
+| 9:00–10:00 | State the key takeaway and hand off to the Audience Activity. | Workload modeling, not tool choice, decides whether a performance test result can be trusted. |
+
+### 9.4 Expected Learning Outcomes
+
+By the end of the Live Demo, the audience should understand that:
+
+- Workload modeling is defined before any tool is touched, and both tool implementations are expected to reproduce it exactly.
+- Running the same workload consistently across tools — not raw tool speed — is what makes a JMeter-vs-k6 comparison meaningful.
+- Apache JMeter and k6 have different strengths (GUI-based explainability versus code-based, CI-friendly scripting); neither is presented as universally better.
+- AI can accelerate first-draft script generation, but engineering judgment remains essential before any generated script is used in performance testing.
+
+These outcomes lead directly into the Audience Activity: now that the audience has seen how a workload is executed, they will design one themselves.
 
 ---
 

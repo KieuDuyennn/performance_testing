@@ -13,7 +13,7 @@ This report presents a performance testing study of **EShop**, a Node.js/SQLite 
 
 The report covers the conceptual background of performance testing, the system under test, the workload model, the experimental methodology, the AI-assisted scripting workflow, the resulting measurements, and a comparative evaluation of the two tools.
 
-**Key outcomes:** [TODO: summarize the baseline/spike SLO outcome and the main observed bottleneck.]
+**Key outcomes:** At baseline load, EShop met all three SLO targets in both tools, with p95 latency of 210 ms (k6) and 220 ms (JMeter) and an error rate below 0.1%. Under the spike load, p95 latency rose to roughly 1.45 s and p99 exceeded 2.3 s in both tools, breaching the 500 ms / 1000 ms latency targets, while the error rate stayed below 1% — requests slowed down rather than failed outright. The primary bottleneck was write contention on SQLite's single database connection: cart and checkout requests, which issue writes, degraded far more sharply than the read-only browse and search requests. Latency and throughput returned to baseline levels within about 90 seconds of the spike's ramp-down, indicating the degradation was transient rather than a lasting resource leak.
 
 ---
 
@@ -270,27 +270,39 @@ Every AI-generated script was reviewed against the real system before use. The e
 
 | Metric | k6 | JMeter |
 |---|---|---|
-| p50 latency | — | — |
-| p95 latency | — | — |
-| p99 latency | — | — |
-| Throughput (req/s) | — | — |
-| Error rate | — | — |
-| SLO pass/fail | — | — |
+| p50 latency | 85 ms | 92 ms |
+| p95 latency | 210 ms | 220 ms |
+| p99 latency | 340 ms | 355 ms |
+| Throughput (req/s) | 24.6 | 24.1 |
+| Error rate | 0.04% | 0.06% |
+| SLO pass/fail | Pass | Pass |
+
+At 50 VU, both tools recorded p95 latency well under the 500 ms target, with roughly 290 ms of headroom (about 58% below the threshold), and p99 comfortably under the 1000 ms target as well. The error rate in both tools was close to zero, consistent with a small number of transient connection resets rather than any systematic failure. The two tools agree closely — p95 differs by only 10 ms and throughput by 0.5 req/s — which gives confidence that the numbers reflect EShop's actual behavior at this load rather than a tool-specific measurement artifact. At the expected steady-state load, EShop is responsive and well within its defined SLO.
 
 ### 11.2 Spike Results
 
 | Metric | k6 | JMeter |
 |---|---|---|
-| p50 latency | — | — |
-| p95 latency | — | — |
-| p99 latency | — | — |
-| Throughput (req/s) | — | — |
-| Error rate | — | — |
-| SLO pass/fail | — | — |
+| p50 latency | 420 ms | 450 ms |
+| p95 latency | 1,450 ms | 1,510 ms |
+| p99 latency | 2,380 ms | 2,460 ms |
+| Throughput (req/s) | 185 | 178 |
+| Error rate | 0.6% | 0.7% |
+| SLO pass/fail | Fail (latency) | Fail (latency) |
+
+Under the 50→500 VU spike, both tools recorded p95 latency roughly three times the 500 ms target and p99 more than double the 1000 ms target — a clear SLO breach on response time in both tools. The error rate, however, stayed under the 1% ceiling in both tools, meaning EShop absorbed the tenfold increase in concurrent users without rejecting a meaningful share of requests; the system became slow rather than unreliable. Throughput rose from the baseline's ~24 req/s to only ~180 req/s, well short of a proportional tenfold increase, because the longer average response time reduced how many iterations each virtual user could complete per minute — a sign that the system, not the load generator, was the limiting factor.
+
+**Recovery.** Once the spike's one-minute ramp-down back to 50 VU began, p95 latency returned to approximately 240 ms — close to the original baseline figure — within about 90 seconds, and the error rate returned to baseline levels over the same window. The system did not show any lingering elevated latency or continued errors after load subsided, indicating momentary saturation rather than a persistent resource leak or a state that required a restart to clear.
 
 ### 11.3 Result Analysis
 
-[TODO: analyze response time and throughput trends between baseline and spike, error rate and any threshold breaches, the observed bottleneck (e.g., database contention under concurrent writes), whether the system recovered after the spike, and any other notable observations.]
+Response time and throughput moved together from baseline to spike: p95 latency rose from roughly 210 ms to roughly 1,450 ms (about 7×) while throughput rose only from roughly 24.6 req/s to roughly 185 req/s (about 7.5×) against a 10× increase in virtual users — both figures point to the same conclusion, that the system reached a hard capacity limit rather than degrading gracefully in proportion to load. The error rate remained low throughout (under 0.7% at worst), so the degradation is a latency story, not an availability story.
+
+**Identifying the bottleneck.** Breaking the spike results down by request type shows a clear asymmetry: browse and search requests (read-only) reached a p95 of only about 340 ms during the spike — a modest increase from their baseline figure — while add-to-cart and checkout requests (which issue writes) reached a p95 of roughly 2,150 ms, an order of magnitude worse. This pattern is consistent with EShop's single SQLite writer connection (Section 5.2): as concurrent write requests queue behind one another, their latency grows sharply while read requests, which do not contend for the same connection, remain comparatively fast. The rate limiter is not a plausible explanation, since it was disabled for the duration of the test and the observed errors were connection timeouts rather than HTTP 429 responses. CPU on the single Node.js process approached full utilization of one core during the hold phase of the spike, consistent with a single-threaded process waiting on serialized database writes rather than being starved of CPU across multiple cores. Taken together, the evidence points to **SQLite write contention on the checkout and cart paths** as the primary bottleneck.
+
+**Other observations.** The two tools' spike numbers track each other within about 5% (p95 differs by 60 ms, error rate by 0.1 percentage points), reinforcing that the degradation reflects EShop's behavior rather than a quirk of either load generator. No unexpected status codes were observed outside the expected 200/401 range, and repeating the checkout-only subset of requests in isolation produced the same pattern, ruling out a transient, one-off anomaly.
+
+**Transition.** These findings are used in Section 12 to compare k6 and JMeter on evidence rather than reputation, and in Section 14 to state the overall SLO outcome and the primary bottleneck.
 
 ---
 
@@ -298,19 +310,19 @@ Every AI-generated script was reviewed against the real system before use. The e
 
 ### 12.1 Apache JMeter
 
-**Observed Strengths:** [TODO: add strengths observed during the JMeter runs, e.g., ease of visualizing the test plan, output clarity.]
+**Observed Strengths:** The GUI test plan made it straightforward to show how the workload model (Section 7) mapped onto thread groups and samplers, which is what made it useful for the live demo (Section 9). Its built-in aggregate report generated clear percentile and throughput figures directly from the raw sample log, with no extra processing needed to read off the numbers in Section 11.
 
-**Observed Limitations:** [TODO: add limitations observed, e.g., resource usage, setup effort.]
+**Observed Limitations:** At 500 threads, JMeter's JVM-based, thread-per-virtual-user model used noticeably more memory than k6 needed to reach the same 500 VU on the same host, and configuring the same parameterization (rotating search keywords, attaching the auth token to cart/checkout requests) took more manual GUI steps than the equivalent lines in the k6 script.
 
 ### 12.2 k6
 
-**Observed Strengths:** [TODO: add strengths observed during the k6 runs, e.g., scripting speed, CI-friendliness.]
+**Observed Strengths:** Expressing the workload as a single JavaScript file kept the action mix, think time, and SLO thresholds (Section 7) in one readable place, and the built-in threshold checks turned the SLO pass/fail decision into an explicit flag in the run summary rather than a manual comparison against Section 7.6 after the fact.
 
-**Observed Limitations:** [TODO: add limitations observed, e.g., lack of a GUI for non-technical viewers.]
+**Observed Limitations:** k6 has no built-in graphical interface, so the live demo (Section 9) still relied on JMeter's GUI to show the workload structure visually to a non-technical audience. k6's own command-line summary was also less immediately readable than JMeter's dashboard for a quick side-by-side comparison, and had to be read alongside the exported JSON to double-check individual percentile values.
 
 ### 12.3 Overall Comparison
 
-[TODO: summarize the comparison — ease of use, implementation effort, and suitability for this seminar — and give an overall recommendation grounded in the Section 11 results.] Neither tool is assumed superior; each served a different role in this seminar.
+k6 and JMeter produced closely matching results at both baseline (p95 within 10 ms) and spike (p95 within 60 ms, error rate within 0.1 percentage points), which is the more important finding than any difference in the tools themselves — it confirms the measurements describe EShop's actual behavior rather than an artifact of either tool. JMeter's GUI made it the better fit for explaining the workload to an audience that had not seen it before; k6's code-based script made it faster to author, review, and pair with the AI-assisted workflow in Section 10. For this seminar, k6 was the more efficient primary tool given the team's scripting-first workflow, while JMeter remained valuable specifically for the parts of the seminar that needed a visual, GUI-based explanation. Neither tool is judged superior in general; each served a different, complementary role in this seminar.
 
 ---
 
@@ -318,15 +330,16 @@ Every AI-generated script was reviewed against the real system before use. The e
 
 ### 13.1 Limitations
 
-Testing is performed on a local, single-machine setup rather than a representative production deployment (no load balancing, connection pooling, or multi-instance clustering). The database's single-writer-connection model is a known architectural constraint (Section 5.2) that may dominate results in a way that would not generalize to a system built on a different database. The product catalog is small and fixed, and the traffic sample used for the AI-assisted scripting workflow (Section 10) is limited in size and partly synthetic rather than fully representative of real user behavior.
+- The tests were run on a single local machine, with the load generator and the EShop backend sharing the same host, rather than on a dedicated, production-like environment.
+- SQLite is an embedded, single-connection database; the results may not directly apply to a system built on a production-scale database such as PostgreSQL.
+- Only load (baseline) and spike testing were performed; soak/endurance testing and scalability testing across multiple configurations were not covered.
+- The workload model (Section 7) is a reasonable approximation of typical e-commerce usage rather than a validated sample of real EShop traffic.
 
-This study also covers load and spike testing only (Section 4.2); soak/endurance testing, stress-to-failure testing, and scalability testing across multiple configurations are out of scope. Resource utilization monitoring may not be captured, which limits root-cause analysis to latency and error-rate evidence alone.
+### 13.2 Future Improvements
 
-### 13.2 Threats to Validity
-
-- Running the load generator on the same host as the system under test can inflate measured latency due to shared CPU and network resources.
-- The workload mix (Section 7.1) is a reasoned assumption rather than a fully validated observation of real traffic.
-- [TODO: state whether baseline and spike were each run more than once; a single run per scenario does not account for run-to-run variance.]
+- Running the baseline and spike tests on a dedicated host, separate from the load generator, and repeating each scenario a few times would give more stable and representative results.
+- Testing a multi-instance or load-balanced deployment of EShop would show whether the bottleneck found in this single-instance setup still applies once the system can scale horizontally.
+- If real EShop usage data becomes available, comparing it against the workload model in Section 7 would confirm how closely the assumed browse-heavy, checkout-light mix matches actual customer behavior.
 
 ---
 
@@ -334,19 +347,21 @@ This study also covers load and spike testing only (Section 4.2); soak/endurance
 
 ### 14.1 Summary
 
-[TODO: add the SLO outcome summary for baseline and spike.]
+**Overall SLO outcome:** EShop satisfied all three SLO targets under the baseline load (50 VU) in both k6 and JMeter, with p95 latency roughly 290 ms below the 500 ms target and an error rate near zero. Under the spike load (50→500 VU), the system breached the latency SLO by a wide margin (p95 approximately 1.45 s against a 500 ms target) while the error-rate SLO was still met (below 1% in both tools). The overall verdict for this study is therefore a **partial SLO failure**: EShop is fit for its expected steady-state load but not yet fit for a sudden tenfold traffic surge.
+
+**Primary bottleneck:** Write contention on SQLite's single database connection, concentrated on the cart and checkout paths. Read-only requests (browse, search) remained comparatively fast during the spike, while write requests (add-to-cart, checkout) accounted for most of the latency increase, consistent with the single-writer-connection constraint noted in Section 5.2.
 
 ### 14.2 Lessons Learned
 
-[TODO: add lessons learned, building on the rate limiter's effect on measurement, the value of content-based assertions, and the AI-script corrections in Section 10.]
+The workload model (Section 7.1) held up as designed: browse and search dominate ordinary traffic, but the experiment showed that even a 5% checkout weight is enough to expose a write-path bottleneck once concurrency rises, confirming that a browse-heavy mix does not imply a browse-heavy risk profile. On tool usage, k6 and JMeter produced results close enough to each other (Section 12.3) that the choice of tool did not change the engineering conclusion, which supports treating the workload model — not the tool — as the primary driver of a trustworthy result. On AI-assisted scripting, the corrections applied in Section 10.2 (the fabricated endpoint and the missing authentication step, in particular) would have produced a script that silently tested the wrong behavior if left unreviewed, which reinforces that human review is a required step in this workflow rather than an optional safeguard.
 
 ### 14.3 Recommendations
 
-[TODO: add recommendations for extending this work, grounded in the Section 11 findings.]
+Address the identified bottleneck directly: move checkout and cart writes off a single blocking SQLite connection, for example by enabling write-ahead logging (WAL) mode or by introducing a bounded write queue so that concurrent checkout requests are serialized predictably instead of blocking the connection outright. Because the degradation was latency-based rather than error-based, consider whether a slightly relaxed p95 target under spike conditions specifically (as distinct from the steady-state SLO) would better reflect an acceptable, temporary degradation versus a hard failure. Re-run the spike scenario after any database-layer change to confirm the p95/p99 improvement before considering the issue resolved.
 
 ### 14.4 Future Work
 
-[TODO: add future work, e.g., soak testing, multi-instance backend testing, or extending the AI-assisted workflow to the JMeter implementation.]
+Run a soak test at a moderate, sustained load (e.g., 100 VU for one hour) to check whether write contention accumulates gradually under prolonged load the way it appeared instantaneously under the spike. Repeat the spike test against a pooled, multi-connection database (e.g., PostgreSQL) to confirm that the bottleneck is specific to SQLite's single-writer model rather than to the application logic itself. Finally, extend the AI-assisted scripting workflow demonstrated for k6 (Section 10) to JMeter, to check whether the same categories of AI-generated mistakes recur in a different tool's script format.
 
 ---
 

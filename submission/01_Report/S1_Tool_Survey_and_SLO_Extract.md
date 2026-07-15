@@ -42,7 +42,7 @@ secondary), Locust (considered as a fallback, not chosen), and an LLM-assisted
 
 - k6's JavaScript scripting matches EShop's own stack and makes AI-assisted script review straightforward, and its built-in thresholds fit the seminar's baseline/spike SLO checks directly.
 - JMeter's GUI test plan is what actually gets shown live during the demo, since it is far easier for a non-technical audience to follow than a script scrolling in a terminal.
-- Locust was a real fallback candidate since it is free and Python-based, but weaker built-in reporting and threshold support compared to k6, plus no team member already knowing Python well, made it a second choice rather than a co-primary.
+- Locust was a real fallback candidate since it is free and Python-based, but its weaker built-in reporting and threshold support compared to k6 made it a second choice rather than a co-primary.
 
 **Selection rationale, as written in the report (Section 6):**
 

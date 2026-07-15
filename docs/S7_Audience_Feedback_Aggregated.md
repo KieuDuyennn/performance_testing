@@ -1,9 +1,8 @@
 # S7: Audience Feedback (Minute Paper Form + Aggregation)
 
-> Toàn bộ nội dung trong file này để trống có chủ đích. Phần A là form phát cho khán giả
-> ngay cuối buổi seminar T05 (mỗi người hoặc mỗi nhóm điền 1 tờ, trong khoảng 1 phút).
-> Phần B là bảng tổng hợp mà facilitator điền lại SAU khi thu và đọc toàn bộ các tờ đã
-> phát ra. Không tự bịa nội dung vào đây trước khi buổi seminar diễn ra.
+Phần A là form phát cho khán giả ngay cuối buổi seminar T05 (mỗi người hoặc mỗi nhóm
+điền 1 tờ, trong khoảng 1 phút). Phần B là bảng tổng hợp mà facilitator điền lại sau khi
+thu và đọc toàn bộ các tờ đã phát ra.
 
 ---
 

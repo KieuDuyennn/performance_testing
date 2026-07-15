@@ -45,22 +45,6 @@ Modern web applications must remain responsive and stable as user load grows. Fu
 
 This seminar uses **EShop**, a Node.js/Express backend with a SQLite database, as the system under test. EShop is a small e-commerce application exposing REST endpoints for product browsing, search, cart management, and checkout, secured with a JWT-based login flow.
 
-**Figure 1 — Overall Seminar Workflow**
-
-```
-EShop
-   ↓
-Workload Model
-   ↓
-JMeter + k6
-   ↓
-Baseline / Spike
-   ↓
-Performance Metrics
-   ↓
-Evaluation
-```
-
 ---
 
 ## 4. Performance Testing Fundamentals
@@ -365,4 +349,22 @@ Run a soak test at a moderate, sustained load (e.g., 100 VU for one hour) to che
 
 ## 15. References
 
-[TODO: list references in numbered IEEE or APA format.]
+[1] J. D. Meier, C. Farre, P. Bansode, S. Barber, and D. Rea, *Performance Testing Guidance for Web Applications*. Redmond, WA, USA: Microsoft Corporation, 2007.
+
+[2] I. Molyneaux, *The Art of Application Performance Testing: Help for Programmers and Quality Assurance*, 2nd ed. Sebastopol, CA, USA: O'Reilly Media, 2014.
+
+[3] B. Gregg, *Systems Performance: Enterprise and the Cloud*, 2nd ed. Boston, MA, USA: Addison-Wesley, 2020.
+
+[4] Apache Software Foundation, "Apache JMeter User's Manual," *Apache JMeter Documentation*. [Online]. Available: https://jmeter.apache.org/usermanual/index.html
+
+[5] Grafana Labs, "k6 Documentation," *Grafana k6 Docs*. [Online]. Available: https://k6.io/docs/
+
+[6] SQLite Consortium, "SQLite Documentation," *SQLite*. [Online]. Available: https://www.sqlite.org/docs.html
+
+[7] OpenJS Foundation, "Node.js Documentation," *Node.js*. [Online]. Available: https://nodejs.org/en/docs
+
+[8] Expressjs.com, "Express — Node.js Web Application Framework," *Express Documentation*. [Online]. Available: https://expressjs.com/
+
+[9] Web Performance Working Group, "HAR 1.2 Specification," *W3C Community Group*. [Online]. Available: https://w3c.github.io/web-performance/specs/HAR/Overview.html
+
+[10] L. Q. Vu, "T05 — Performance Testing," Software Testing Seminar Track Brief, CS423/CSC15003, Faculty of Information Technology, University of Science, VNU-HCM, 2026.

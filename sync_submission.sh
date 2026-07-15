@@ -14,12 +14,14 @@ echo "Syncing into $SUB/ from repo root: $(pwd)"
 rm -rf "$SUB/01_Report"
 mkdir -p "$SUB/01_Report"
 cp "report/report.md"                        "$SUB/01_Report/Report.md"
+[ -f "report/report.pdf" ] && cp "report/report.pdf" "$SUB/01_Report/Report.pdf"
 cp "docs/User_Guide.md"                       "$SUB/01_Report/User_Guide.md"
 [ -f "docs/User_Guide.pdf" ] && cp "docs/User_Guide.pdf" "$SUB/01_Report/User_Guide.pdf"
 # Graded separately per the rubric (S1 proposal is its own 10% line), but content is
 # extracted from Report.md rather than maintained twice -- see the file's own header.
 # If Report.md Sections 6 / 7.6 / 11 change, regenerate this extract file by hand first.
 cp "report/S1_Tool_Survey_and_SLO_Extract.md" "$SUB/01_Report/S1_Tool_Survey_and_SLO_Extract.md"
+[ -f "report/S1_Tool_Survey_and_SLO_Extract.pdf" ] && cp "report/S1_Tool_Survey_and_SLO_Extract.pdf" "$SUB/01_Report/S1_Tool_Survey_and_SLO_Extract.pdf"
 
 # --- 04_Source_Code (excludes node_modules, .git, runtime db, results) --
 rm -rf "$SUB/04_Source_Code"
@@ -62,6 +64,10 @@ cp "docs/S5_Activity_Worksheet.md"             "$SUB/06_Activity_And_Feedback/S5
 cp "docs/S7_Audience_Feedback_Aggregated.md"   "$SUB/06_Activity_And_Feedback/S7_Audience_Feedback_Aggregated.md"
 cp "docs/S8_Final_Reflection.md"               "$SUB/06_Activity_And_Feedback/S8_Final_Reflection.md"
 cp "docs/team_log.md"                          "$SUB/06_Activity_And_Feedback/team_log.md"
+# PDF exports of the S5/S7/S8 documents, when present
+for f in S5_Activity_Worksheet S7_Audience_Feedback_Aggregated S8_Final_Reflection; do
+  [ -f "docs/$f.pdf" ] && cp "docs/$f.pdf" "$SUB/06_Activity_And_Feedback/$f.pdf"
+done
 
 # --- 02_Slides / 03_Demo_Video: pull in real files if the team has dropped them in place ---
 [ -f "slides/Seminar_Slides.pptx" ] && cp "slides/Seminar_Slides.pptx" "$SUB/02_Slides/Seminar_Slides.pptx"

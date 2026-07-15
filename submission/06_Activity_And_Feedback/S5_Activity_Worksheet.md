@@ -24,8 +24,7 @@ Given the EShop API behavior summary, each group proposes a workload model with:
 
 ## Worksheet Template
 
-> Left blank on purpose. Each audience group fills in their own row live during the
-> 25-minute activity; do not pre-fill this table.
+Each audience group fills in their own row live during the 25-minute activity.
 
 | Group | Workload Mix | Peak Load Plan | Think-time Assumption | Risks |
 |---|---|---|---|---|
@@ -36,7 +35,7 @@ Given the EShop API behavior summary, each group proposes a workload model with:
 
 - **Suggested realistic mix:** Browse 40%, Search 35%, Add to Cart 20%, Checkout 5% per
   user session, based on the workload model the team validated for EShop (see
-  `report/report.md` Section 7.2). For the Black Friday framing of this activity, a
+  `01_Report/Report.md` Section 7.2). For the Black Friday framing of this activity, a
   reasonable variant shifts a few points from Browse toward Add to Cart and Checkout
   (shoppers arrive with more purchase intent during a sale event), while keeping
   Checkout a clear minority of actions, since even during a sale most sessions still
@@ -49,7 +48,7 @@ Given the EShop API behavior summary, each group proposes a workload model with:
   the load shape realistic rather than artificially bursty.
 
 - **Common mistakes to avoid** (drawn from the EShop traps documented in
-  `docs/00_Seminar_Master_Brief.md` Section 7 and the team's own study notes):
+  the team's verified study of the EShop source):
   - Picking a raw VU number (for example, "500 users") without first defining an action
     mix. The core message of this activity is that the workload model, not the VU count,
     determines whether a result is trustworthy.

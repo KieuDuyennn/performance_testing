@@ -2,10 +2,10 @@
 # Refreshes submission/ with the current contents of the source-of-truth files
 # in the repo. Safe to re-run any time; each target is wiped and recopied.
 #
-# Usage: ./submission/sync_submission.sh   (run from anywhere, resolves repo root itself)
+# Usage: ./sync_submission.sh   (run from anywhere, resolves repo root itself)
 
 set -euo pipefail
-cd "$(dirname "$0")/.."   # repo root (performance_testing/)
+cd "$(dirname "$0")"   # repo root (performance_testing/)
 SUB="submission"
 
 echo "Syncing into $SUB/ from repo root: $(pwd)"
@@ -68,4 +68,4 @@ cp "docs/team_log.md"                          "$SUB/06_Activity_And_Feedback/te
 mp4=$(find media -maxdepth 1 -iname "*.mp4" | head -n 1 || true)
 [ -n "$mp4" ] && cp "$mp4" "$SUB/03_Demo_Video/"
 
-echo "Done. Review $SUB/README.md for the remaining TODOs before zipping."
+echo "Done."

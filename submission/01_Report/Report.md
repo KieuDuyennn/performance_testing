@@ -13,7 +13,7 @@ This report presents a performance testing study of **EShop**, a Node.js/SQLite 
 
 The report covers the conceptual background of performance testing, the system under test, the workload model, the experimental methodology, the AI-assisted scripting workflow, the resulting measurements, and a comparative evaluation of the two tools.
 
-**Key outcomes:** At baseline load, EShop met all three SLO targets in both tools, with p95 latency of 210 ms (k6) and 220 ms (JMeter) and an error rate below 0.1%. Under the spike load, p95 latency rose to roughly 1.45 s and p99 exceeded 2.3 s in both tools, breaching the 500 ms / 1000 ms latency targets, while the error rate stayed below 1% — requests slowed down rather than failed outright. This pattern points to write contention on SQLite's single database connection, which every cart and checkout request must pass through, as the primary bottleneck. Once the spike's ramp-down began, latency returned close to baseline levels and the error rate settled back down, indicating the degradation was transient rather than a lasting resource issue.
+**Key outcomes:** At baseline load, EShop passed both latency targets with a wide margin (p95 of 2.54 ms in k6 and 5 ms in JMeter), but failed the error-rate SLO: roughly 40% of requests returned authentication errors in both tools, consistent with EShop's login-lockout behavior interacting with the shared test accounts. Under the spike load, the latency targets were breached as well (p95 roughly 1.45 s and p99 above 2.3 s in both tools) while the authentication-related error rate persisted at roughly 40%. The overall verdict is an SLO failure at both load levels, driven by the error-rate ceiling at baseline and by both error rate and latency under the spike. For the requests that did succeed, latency under the spike grew far faster than load did, a pattern consistent with write contention on SQLite's single database connection, which every cart and checkout request must pass through.
 
 ---
 
@@ -264,7 +264,7 @@ Every AI-generated script was reviewed against the real system before use. The e
 | Error rate    | 39.76%       | 39.89%       | < 1.0%        | **Fail (Auth)** |
 | SLO pass/fail | Fail (error) | Fail (error) | -             | **Fail**        |
 
-At 50 VU, both tools recorded p95 latency well under the 500 ms target, with roughly 290 ms of headroom (about 58% below the threshold), and p99 comfortably under the 1000 ms target as well. The error rate in both tools was close to zero. The two tools agree closely — p95 differs by only 10 ms — which gives confidence that the numbers reflect EShop's actual behavior at this load rather than a tool-specific measurement artifact. At the expected steady-state load, EShop is responsive and well within its defined SLO.
+At 50 VU, both tools recorded latency far below the targets: p95 stayed in the single-digit milliseconds and p99 under 100 ms, against 500 ms and 1000 ms thresholds. The error rate, however, failed its SLO by a wide margin: roughly 40% of requests returned errors in both tools, labeled as authentication failures. This matches EShop's documented login-lockout behavior (an account is locked after two failed attempts), which the shared test-account pool triggered under concurrency. The two tools agree closely on both figures, which gives confidence the numbers reflect EShop's actual behavior at this load rather than a tool-specific measurement artifact. The baseline verdict is therefore a fail on error rate despite excellent latency.
 
 ### 11.2 Spike Results
 
@@ -276,19 +276,21 @@ At 50 VU, both tools recorded p95 latency well under the 500 ms target, with rou
 | Error rate    | 40.66%   | 40.89%   | < 1.0%        | **Fail (Auth & Lock)** |
 | SLO pass/fail | Fail     | Fail     | -             | **Fail**               |
 
-Under the 50→500 VU spike, both tools recorded p95 latency roughly three times the 500 ms target and p99 more than double the 1000 ms target — a clear SLO breach on response time in both tools. The error rate, however, stayed under the 1% ceiling in both tools, meaning EShop absorbed the tenfold increase in concurrent users without rejecting a meaningful share of requests; the system became slow rather than unreliable.
+Under the 50→500 VU spike, both tools recorded p95 latency roughly three times the 500 ms target and p99 more than double the 1000 ms target, a clear SLO breach on response time in both tools. The error rate also stayed around 40% in both tools, labeled as authentication and lockout failures, so the spike scenario fails both the latency and the error-rate SLO. The two failure causes are distinct: the errors are dominated by the same auth/lockout behavior already visible at baseline, while the latency growth affects the requests that do succeed.
 
 **Recovery.** Once the spike's ramp-down back to 50 VU began (Section 7.5), p95 latency returned close to the baseline figure and the error rate returned to baseline levels. The system did not show any lingering elevated latency or continued errors after load subsided, indicating momentary saturation rather than a persistent issue.
 
 ### 11.3 Result Analysis
 
-Response time grew far faster than load did: p95 latency rose from roughly 210 ms at baseline to roughly 1,450 ms at spike — a roughly 7× increase — against a 10× increase in virtual users (50 → 500, Section 7.4–7.5). This disproportionate growth indicates the system was approaching a hard limit rather than degrading gracefully in step with load.
+Response time grew far faster than load did: p95 latency rose from single-digit milliseconds at baseline to roughly 1,450 ms at spike, an increase of two orders of magnitude against a 10× increase in virtual users (50 → 500, Section 7.4–7.5). This disproportionate growth indicates the system was approaching a hard limit rather than degrading gracefully in step with load.
 
-**Bottleneck Hypothesis:** Because the entire testing process was conducted on a single physical machine (local host), some performance degradation may be attributed to OS resource contention (Context Switching) with both the load generators (k6/JMeter) and the backend running concurrently. However, the experimental data reveals a very distinct characteristic: the error rate remained extremely low (< 1%) while latency spiked significantly.
+**Error analysis:** The roughly 40% error rate observed at both load levels is dominated by authentication and lockout failures rather than by timeouts or server crashes. This is a property of the test-data design interacting with EShop's login protection (an account locks after two failed attempts) rather than of raw capacity, and it is the first-priority item to address in the test setup (a per-VU account pool) before the error-rate SLO can be evaluated cleanly.
+
+**Bottleneck Hypothesis:** Because the entire testing process was conducted on a single physical machine (local host), some performance degradation may be attributed to OS resource contention (Context Switching) with both the load generators (k6/JMeter) and the backend running concurrently. However, the latency of the requests that did succeed shows a distinct pattern: it spiked disproportionately while those requests still completed rather than timing out.
 
 This pattern is highly consistent with SQLite's sequential write-lock mechanism, which only permits a single connection to perform write operations at any given time. As concurrent user load surged, requests to add items to the cart and process checkouts were forced to queue for database write access, creating a virtual queue that inflated the overall response time of the system.
 
-**Other observations.** The two tools' spike numbers track each other closely (p95 differs by 60 ms, error rate by 0.1 percentage points), reinforcing that the degradation reflects EShop's behavior rather than a quirk of either load generator.
+**Other observations.** The two tools' spike numbers track each other closely (p95 differs by 60 ms, error rate by about 0.2 percentage points), reinforcing that the degradation reflects EShop's behavior rather than a quirk of either load generator.
 
 **Transition.** These findings are used in Section 12 to compare k6 and JMeter on evidence rather than reputation, and in Section 14 to state the overall SLO outcome and the primary bottleneck.
 
@@ -310,7 +312,7 @@ This pattern is highly consistent with SQLite's sequential write-lock mechanism,
 
 ### 12.3 Overall Comparison
 
-k6 and JMeter produced closely matching results at both baseline (p95 within 10 ms) and spike (p95 within 60 ms, error rate within 0.1 percentage points), which is the more important finding than any difference in the tools themselves — it confirms the measurements describe EShop's actual behavior rather than an artifact of either tool. JMeter's GUI made it the better fit for explaining the workload to an audience that had not seen it before; k6's code-based script made it faster to author, review, and pair with the AI-assisted workflow in Section 10. For this seminar, k6 was the more efficient primary tool given the team's scripting-first workflow, while JMeter remained valuable specifically for the parts of the seminar that needed a visual, GUI-based explanation. Neither tool is judged superior in general; each served a different, complementary role in this seminar.
+k6 and JMeter produced closely matching results at both baseline (p95 within a few ms) and spike (p95 within 60 ms, error rate within a fraction of a percentage point), which is the more important finding than any difference in the tools themselves — it confirms the measurements describe EShop's actual behavior rather than an artifact of either tool. JMeter's GUI made it the better fit for explaining the workload to an audience that had not seen it before; k6's code-based script made it faster to author, review, and pair with the AI-assisted workflow in Section 10. For this seminar, k6 was the more efficient primary tool given the team's scripting-first workflow, while JMeter remained valuable specifically for the parts of the seminar that needed a visual, GUI-based explanation. Neither tool is judged superior in general; each served a different, complementary role in this seminar.
 
 ### 12.4 Load Testing Failure Modes
 
@@ -343,7 +345,7 @@ When the system begins to bottleneck (due to the SQLite write-lock), response ti
 
 ### 14.1 Summary
 
-**Overall SLO outcome:** EShop satisfied all three SLO targets under the baseline load (50 VU) in both k6 and JMeter, with p95 latency roughly 290 ms below the 500 ms target and an error rate near zero. Under the spike load (50→500 VU), the system breached the latency SLO by a wide margin (p95 approximately 1.45 s against a 500 ms target) while the error-rate SLO was still met (below 1% in both tools). The overall verdict for this study is therefore a **partial SLO failure**: EShop is fit for its expected steady-state load but not yet fit for a sudden tenfold traffic surge.
+**Overall SLO outcome:** Under the baseline load (50 VU), EShop passed both latency targets with a wide margin (p95 in the single-digit milliseconds) but failed the error-rate SLO, with roughly 40% of requests returning authentication errors in both tools. Under the spike load (50→500 VU), the system additionally breached the latency SLO by a wide margin (p95 approximately 1.45 s against a 500 ms target) while the authentication-related error rate persisted. The overall verdict for this study is therefore an **SLO failure at both load levels**, with two distinct causes: the auth/lockout error behavior (a test-data and application-behavior issue visible even at baseline) and the latency degradation under spike (a capacity issue on the write path).
 
 **Primary bottleneck:** Write contention on SQLite's single database connection. The spike showed latency rising sharply while the error rate stayed low (Sections 11.2–11.3) — a pattern consistent with requests queuing behind a serialized resource rather than being rejected — and EShop's architecture has exactly one resource of this kind: the single connection that every cart and checkout write must pass through (Section 5.2).
 
@@ -353,7 +355,7 @@ The workload model (Section 7.1) held up as designed: browse and search dominate
 
 ### 14.3 Recommendations
 
-Address the identified bottleneck directly: move checkout and cart writes off a single blocking SQLite connection, for example by enabling write-ahead logging (WAL) mode or by introducing a bounded write queue so that concurrent checkout requests are serialized predictably instead of blocking the connection outright. Because the degradation was latency-based rather than error-based, consider whether a slightly relaxed p95 target under spike conditions specifically (as distinct from the steady-state SLO) would better reflect an acceptable, temporary degradation versus a hard failure. Re-run the spike scenario after any database-layer change to confirm the p95/p99 improvement before considering the issue resolved.
+Two changes are needed, one on each side of the test boundary. On the test side, replace the shared test accounts with a per-VU account pool so the login-lockout protection is no longer triggered by the test design itself; the error-rate SLO cannot be evaluated cleanly until then. On the system side, address the latency bottleneck directly: move checkout and cart writes off a single blocking SQLite connection, for example by enabling write-ahead logging (WAL) mode or by introducing a bounded write queue so that concurrent checkout requests are serialized predictably instead of blocking the connection outright. Re-run both scenarios after these changes to confirm the error rate drops below the 1% ceiling and the p95/p99 latency improves before considering the issues resolved.
 
 ### 14.4 Future Work
 

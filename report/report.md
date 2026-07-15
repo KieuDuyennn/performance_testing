@@ -88,13 +88,13 @@ EShop is a small e-commerce web application built on a Node.js/Express backend w
 - **Rate limiting:** the API applies a request-rate limit per client IP address.
 
 ### 5.3 Testing Scope
-
 The performance test targets four core user workflows:
-
 - **Browse** — viewing the product listing.
 - **Search** — searching for products by keyword.
 - **Add to Cart** — adding a product to an authenticated user's cart.
 - **Checkout** — submitting an authenticated order.
+
+**Environment Setup Note:** To ensure that the high-load scenario (Spike Test up to 500 VUs) accurately reflects the system's processing limits rather than being blocked early at the network layer, the EShop backend environment is launched with the `LOADTEST=1` flag. This configuration actively bypasses the request rate limiter (200 req/15min), isolating the system and focusing the performance measurement on the underlying business logic and database layer.
 
 **Out of scope:** administrative endpoints, non-HTTP protocols, and browser/UI-level testing — this is an API-level performance test.
 
@@ -280,7 +280,9 @@ Under the 50→500 VU spike, both tools recorded p95 latency roughly three times
 
 Response time grew far faster than load did: p95 latency rose from roughly 210 ms at baseline to roughly 1,450 ms at spike — a roughly 7× increase — against a 10× increase in virtual users (50 → 500, Section 7.4–7.5). This disproportionate growth indicates the system was approaching a hard limit rather than degrading gracefully in step with load.
 
-**Identifying the bottleneck.** The error rate stayed low throughout the spike (under 1%), which rules out the system rejecting requests outright; instead, requests were completing, just far more slowly. Rising latency alongside a low error rate is consistent with requests queuing behind a serialized resource rather than being turned away. EShop's architecture (Section 5.2) has exactly one resource of this kind: SQLite's single writer connection, which every cart and checkout write must pass through one at a time. As concurrent write requests during the spike queue behind this single connection, the resulting wait time is the most plausible explanation for the latency growth observed in Sections 11.1–11.2.
+**Bottleneck Hypothesis:** Because the entire testing process was conducted on a single physical machine (local host), some performance degradation may be attributed to OS resource contention (Context Switching) with both the load generators (k6/JMeter) and the backend running concurrently. However, the experimental data reveals a very distinct characteristic: the error rate remained extremely low (< 1%) while latency spiked significantly.
+
+This pattern is highly consistent with SQLite's sequential write-lock mechanism, which only permits a single connection to perform write operations at any given time. As concurrent user load surged, requests to add items to the cart and process checkouts were forced to queue for database write access, creating a virtual queue that inflated the overall response time of the system.
 
 **Other observations.** The two tools' spike numbers track each other closely (p95 differs by 60 ms, error rate by 0.1 percentage points), reinforcing that the degradation reflects EShop's behavior rather than a quirk of either load generator.
 
@@ -305,6 +307,14 @@ Response time grew far faster than load did: p95 latency rose from roughly 210 m
 ### 12.3 Overall Comparison
 
 k6 and JMeter produced closely matching results at both baseline (p95 within 10 ms) and spike (p95 within 60 ms, error rate within 0.1 percentage points), which is the more important finding than any difference in the tools themselves — it confirms the measurements describe EShop's actual behavior rather than an artifact of either tool. JMeter's GUI made it the better fit for explaining the workload to an audience that had not seen it before; k6's code-based script made it faster to author, review, and pair with the AI-assisted workflow in Section 10. For this seminar, k6 was the more efficient primary tool given the team's scripting-first workflow, while JMeter remained valuable specifically for the parts of the seminar that needed a visual, GUI-based explanation. Neither tool is judged superior in general; each served a different, complementary role in this seminar.
+
+### 12.4 Load Testing Failure Modes
+
+**Critical Failure Mode - Coordinated Omission:**
+During practical observation, the team identified a highly common but easily overlooked failure mode inherent to both k6 and JMeter in their default configurations: **Coordinated Omission**.
+When the system begins to bottleneck (due to the SQLite write-lock), response times elongate. Consequently, the Closed Loop Virtual Users (VUs) of the testing tools become "stuck" waiting for a response before they can fire their next request. This inadvertently reduces the actual density of requests sent to the server, resulting in a misleadingly optimistic report with low error rates that masks the reality of external users experiencing severe delays or timeouts.
+
+**Mitigation:** To address this phenomenon, experts recommend transitioning the test scenario from a Closed Model (controlling the number of VUs) to an Open Model (directly controlling the request arrival rate, regardless of how fast or slow the server responds). In k6, this is achieved by utilizing the `constant-arrival-rate` executor configuration, which forces the tool to maintain the target Requests Per Second (RPS) in order to accurately measure the true breaking point of the system.
 
 ---
 

@@ -16,4 +16,4 @@ here automatically.
 
 ## External link
 
-- (add screencast URL here)
+- https://drive.google.com/file/d/1VBBE_1YDkgY4FgtcT_D90P3KrlTdXtgP/view?usp=sharing

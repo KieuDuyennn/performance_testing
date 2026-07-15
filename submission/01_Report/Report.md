@@ -21,21 +21,21 @@ The report covers the conceptual background of performance testing, the system u
 
 ### 2.1 Course & Seminar Information
 
-| Field | Value |
-|---|---|
-| Course | Software Testing (CS423/CSC15003), FIT – University of Science, VNU-HCM |
-| Supervisors | Dr. Lâm Quang Vũ, MSc. Trương Phước Lộc |
-| Seminar Topic | T05 – Performance Testing |
-| Group | Team 09 |
+| Field         | Value                                                                   |
+| ------------- | ----------------------------------------------------------------------- |
+| Course        | Software Testing (CS423/CSC15003), FIT – University of Science, VNU-HCM |
+| Supervisors   | Dr. Lâm Quang Vũ, MSc. Trương Phước Lộc                                 |
+| Seminar Topic | T05 – Performance Testing                                               |
+| Group         | Team 09                                                                 |
 
 ### 2.2 Team Members
 
-| Student ID | Full Name |
-|---|---|
-| 23127006 | Trần Nguyễn Khải Luân |
-| 23127128 | Nguyễn Thành Tiến |
-| 23127179 | Nguyễn Bảo Duy |
-| 23127184 | Lê Phạm Kiều Duyên |
+| Student ID | Full Name             |
+| ---------- | --------------------- |
+| 23127006   | Trần Nguyễn Khải Luân |
+| 23127128   | Nguyễn Thành Tiến     |
+| 23127179   | Nguyễn Bảo Duy        |
+| 23127184   | Lê Phạm Kiều Duyên    |
 
 ---
 
@@ -55,13 +55,13 @@ Performance testing is a non-functional testing discipline that evaluates how a 
 
 ### 4.2 Types of Performance Testing
 
-| Type | Purpose |
-|---|---|
-| **Load testing** | Verify behavior under an expected, realistic concurrent user load (this seminar's "baseline" scenario). |
-| **Stress testing** | Push load beyond expected capacity to find the breaking point. |
-| **Spike testing** | Apply a sudden, sharp increase in load and observe behavior and recovery (this seminar's "spike" scenario, 50 → 500 VU in 30 s). |
-| **Soak / endurance testing** | Sustain a moderate load over a long duration to detect memory leaks or resource exhaustion. |
-| **Scalability testing** | Determine how throughput changes as load or resources are incrementally increased. |
+| Type                         | Purpose                                                                                                                          |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Load testing**             | Verify behavior under an expected, realistic concurrent user load (this seminar's "baseline" scenario).                          |
+| **Stress testing**           | Push load beyond expected capacity to find the breaking point.                                                                   |
+| **Spike testing**            | Apply a sudden, sharp increase in load and observe behavior and recovery (this seminar's "spike" scenario, 50 → 500 VU in 30 s). |
+| **Soak / endurance testing** | Sustain a moderate load over a long duration to detect memory leaks or resource exhaustion.                                      |
+| **Scalability testing**      | Determine how throughput changes as load or resources are incrementally increased.                                               |
 
 This seminar focuses on **load testing** (baseline) and **spike testing**. Soak, stress-to-failure, and scalability testing are out of scope; see Section 13 (Discussion).
 
@@ -88,7 +88,9 @@ EShop is a small e-commerce web application built on a Node.js/Express backend w
 - **Rate limiting:** the API applies a request-rate limit per client IP address.
 
 ### 5.3 Testing Scope
+
 The performance test targets four core user workflows:
+
 - **Browse** — viewing the product listing.
 - **Search** — searching for products by keyword.
 - **Add to Cart** — adding a product to an authenticated user's cart.
@@ -120,12 +122,12 @@ The workload model targets four core EShop actions — browse, search, add-to-ca
 
 ### 7.2 Workload Distribution
 
-| Action | Weight |
-|---|---:|
-| Browse | 40% |
-| Search | 35% |
-| Add to Cart | 20% |
-| Checkout | 5% |
+| Action      | Weight |
+| ----------- | -----: |
+| Browse      |    40% |
+| Search      |    35% |
+| Add to Cart |    20% |
+| Checkout    |     5% |
 
 ### 7.3 Think Time
 
@@ -151,14 +153,14 @@ A sudden increase: start at 50 VU, ramp to 500 VU over 30 seconds, hold for 2 mi
 
 ### 8.1 Test Environment
 
-| Item | Value |
-|---|---|
-| CPU | Intel Core i7-10510U @ 1.80 GHz (4 cores / 8 threads) |
-| RAM | 8 GB |
-| Operating System | Windows 11 Home Single Language |
-| Node.js | v24.4.1 |
-| Apache JMeter | 5.6.3 |
-| k6 | v1.2.0 |
+| Item             | Value                            |
+| ---------------- | --------------------------------- |
+| CPU              | Apple M1 (8 cores)                |
+| RAM              | 16 GB                             |
+| Operating System | macOS 26.5.1 (Build 25F80)        |
+| Node.js          | v24.4.1                           |
+| Apache JMeter    | 5.6.3                             |
+| k6               | v2.1.0                            |
 
 The backend under test and the load generator ran on the same machine; this co-location is a known threat to validity discussed in Section 13.
 
@@ -201,16 +203,16 @@ Because the complete baseline and spike scenarios exceed the available demonstra
 
 ### 9.3 Live Demo Timeline
 
-| Time | Demonstration | Key Message |
-|---|---|---|
-| 0:00–1:00 | Frame the demo: one EShop workload, one testing objective, evaluated with two tools and one AI-assisted script. | One testing objective, realized through two tools and an AI-assisted script — not a tool showcase. |
-| 1:00–2:30 | Walk through the workload model — action mix and think time (Section 7) — before opening either tool. | Workload design comes before tool execution. |
-| 2:30–4:00 | Demonstrate the baseline workload using JMeter: open the GUI test plan to explain how the workload is represented, then show the results from the completed non-GUI measurement run. | JMeter expresses the same workload as a GUI-authored, non-GUI-measured plan. |
-| 4:00–5:30 | Demonstrate the ongoing baseline execution in k6; narrate the streaming summary and threshold results as they appear. | The identical workload, re-expressed as a JavaScript script — same objective, different tool. |
-| 5:30–6:30 | Trigger the spike scenario in k6 to illustrate the rapid increase in load; the completed spike results are presented immediately afterward. | The same workload model also drives the spike test; no separate script is written for it. |
-| 6:30–8:00 | Show the AI-generated performance test script and the log it was drafted from, then walk through why the version actually executed differs after human review. | AI drafts a starting point; the version that runs is the one a human reviewed and corrected. |
-| 8:00–9:00 | Place the JMeter and k6 summaries — both captured in full beforehand — side by side. | Two tools, one workload, comparable evidence — not a competition between tools. |
-| 9:00–10:00 | State the key takeaway and hand off to the Audience Activity. | Workload modeling, not tool choice, decides whether a performance test result can be trusted. |
+| Time       | Demonstration                                                                                                                                                                        | Key Message                                                                                        |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| 0:00–1:00  | Frame the demo: one EShop workload, one testing objective, evaluated with two tools and one AI-assisted script.                                                                      | One testing objective, realized through two tools and an AI-assisted script — not a tool showcase. |
+| 1:00–2:30  | Walk through the workload model — action mix and think time (Section 7) — before opening either tool.                                                                                | Workload design comes before tool execution.                                                       |
+| 2:30–4:00  | Demonstrate the baseline workload using JMeter: open the GUI test plan to explain how the workload is represented, then show the results from the completed non-GUI measurement run. | JMeter expresses the same workload as a GUI-authored, non-GUI-measured plan.                       |
+| 4:00–5:30  | Demonstrate the ongoing baseline execution in k6; narrate the streaming summary and threshold results as they appear.                                                                | The identical workload, re-expressed as a JavaScript script — same objective, different tool.      |
+| 5:30–6:30  | Trigger the spike scenario in k6 to illustrate the rapid increase in load; the completed spike results are presented immediately afterward.                                          | The same workload model also drives the spike test; no separate script is written for it.          |
+| 6:30–8:00  | Show the AI-generated performance test script and the log it was drafted from, then walk through why the version actually executed differs after human review.                       | AI drafts a starting point; the version that runs is the one a human reviewed and corrected.       |
+| 8:00–9:00  | Place the JMeter and k6 summaries — both captured in full beforehand — side by side.                                                                                                 | Two tools, one workload, comparable evidence — not a competition between tools.                    |
+| 9:00–10:00 | State the key takeaway and hand off to the Audience Activity.                                                                                                                        | Workload modeling, not tool choice, decides whether a performance test result can be trusted.      |
 
 ### 9.4 Expected Learning Outcomes
 
@@ -233,14 +235,14 @@ An LLM was used to draft a "realistic shopping" k6 script from a captured HTTP l
 
 ### 10.2 Key Findings
 
-| Issue | Human Fix |
-|---|---|
-| Endpoint in the draft does not exist in the system | Corrected to the real search endpoint |
-| Missing authentication before cart/checkout requests | Added a login step to obtain a session token |
-| No think time between actions | Adjusted to a randomized 1–3 second pause |
-| Hard-coded product/user identifiers | Parameterized from the seeded catalog |
-| Fixed action sequence, not matching the workload mix | Flagged for reconciliation with Section 7.2 |
-| Weak status-code assertions | Tightened to assert an exact successful status |
+| Issue                                                | Human Fix                                      |
+| ---------------------------------------------------- | ---------------------------------------------- |
+| Endpoint in the draft does not exist in the system   | Corrected to the real search endpoint          |
+| Missing authentication before cart/checkout requests | Added a login step to obtain a session token   |
+| No think time between actions                        | Adjusted to a randomized 1–3 second pause      |
+| Hard-coded product/user identifiers                  | Parameterized from the seeded catalog          |
+| Fixed action sequence, not matching the workload mix | Flagged for reconciliation with Section 7.2    |
+| Weak status-code assertions                          | Tightened to assert an exact successful status |
 
 ### 10.3 Human Review Process
 
@@ -254,25 +256,25 @@ Every AI-generated script was reviewed against the real system before use. The e
 
 ### 11.1 Baseline Results
 
-| Metric | k6 | JMeter |
-|---|---|---|
-| p50 latency | 85 ms | 92 ms |
-| p95 latency | 210 ms | 220 ms |
-| p99 latency | 340 ms | 355 ms |
-| Error rate | 0.04% | 0.06% |
-| SLO pass/fail | Pass | Pass |
+| Metric        | k6           | JMeter       | SLO Threshold | Result          |
+| ------------- | ------------ | ------------ | ------------- | --------------- |
+| p50 latency   | 1.23 ms      | 1.00 ms      | -             | Pass            |
+| p95 latency   | 2.54 ms      | 5.00 ms      | < 500 ms      | **Pass**        |
+| p99 latency   | 66.34 ms     | 73.00 ms     | < 1000 ms     | **Pass**        |
+| Error rate    | 39.76%       | 39.89%       | < 1.0%        | **Fail (Auth)** |
+| SLO pass/fail | Fail (error) | Fail (error) | -             | **Fail**        |
 
 At 50 VU, both tools recorded p95 latency well under the 500 ms target, with roughly 290 ms of headroom (about 58% below the threshold), and p99 comfortably under the 1000 ms target as well. The error rate in both tools was close to zero. The two tools agree closely — p95 differs by only 10 ms — which gives confidence that the numbers reflect EShop's actual behavior at this load rather than a tool-specific measurement artifact. At the expected steady-state load, EShop is responsive and well within its defined SLO.
 
 ### 11.2 Spike Results
 
-| Metric | k6 | JMeter |
-|---|---|---|
-| p50 latency | 420 ms | 450 ms |
-| p95 latency | 1,450 ms | 1,510 ms |
-| p99 latency | 2,380 ms | 2,460 ms |
-| Error rate | 0.6% | 0.7% |
-| SLO pass/fail | Fail (latency) | Fail (latency) |
+| Metric        | k6       | JMeter   | SLO Threshold | Result                 |
+| ------------- | -------- | -------- | ------------- | ---------------------- |
+| p50 latency   | 420 ms   | 450 ms   | -             | Pass                   |
+| p95 latency   | 1,450 ms | 1,510 ms | < 500 ms      | **Fail (Latency)**     |
+| p99 latency   | 2,380 ms | 2,460 ms | < 1000 ms     | **Fail (Latency)**     |
+| Error rate    | 40.66%   | 40.89%   | < 1.0%        | **Fail (Auth & Lock)** |
+| SLO pass/fail | Fail     | Fail     | -             | **Fail**               |
 
 Under the 50→500 VU spike, both tools recorded p95 latency roughly three times the 500 ms target and p99 more than double the 1000 ms target — a clear SLO breach on response time in both tools. The error rate, however, stayed under the 1% ceiling in both tools, meaning EShop absorbed the tenfold increase in concurrent users without rejecting a meaningful share of requests; the system became slow rather than unreliable.
 
@@ -361,22 +363,22 @@ Run a soak test at a moderate, sustained load (e.g., 100 VU for one hour) to che
 
 ## 15. References
 
-[1] J. D. Meier, C. Farre, P. Bansode, S. Barber, and D. Rea, *Performance Testing Guidance for Web Applications*. Redmond, WA, USA: Microsoft Corporation, 2007.
+[1] J. D. Meier, C. Farre, P. Bansode, S. Barber, and D. Rea, _Performance Testing Guidance for Web Applications_. Redmond, WA, USA: Microsoft Corporation, 2007.
 
-[2] I. Molyneaux, *The Art of Application Performance Testing: Help for Programmers and Quality Assurance*, 2nd ed. Sebastopol, CA, USA: O'Reilly Media, 2014.
+[2] I. Molyneaux, _The Art of Application Performance Testing: Help for Programmers and Quality Assurance_, 2nd ed. Sebastopol, CA, USA: O'Reilly Media, 2014.
 
-[3] B. Gregg, *Systems Performance: Enterprise and the Cloud*, 2nd ed. Boston, MA, USA: Addison-Wesley, 2020.
+[3] B. Gregg, _Systems Performance: Enterprise and the Cloud_, 2nd ed. Boston, MA, USA: Addison-Wesley, 2020.
 
-[4] Apache Software Foundation, "Apache JMeter User's Manual," *Apache JMeter Documentation*. [Online]. Available: https://jmeter.apache.org/usermanual/index.html
+[4] Apache Software Foundation, "Apache JMeter User's Manual," _Apache JMeter Documentation_. [Online]. Available: https://jmeter.apache.org/usermanual/index.html
 
-[5] Grafana Labs, "k6 Documentation," *Grafana k6 Docs*. [Online]. Available: https://k6.io/docs/
+[5] Grafana Labs, "k6 Documentation," _Grafana k6 Docs_. [Online]. Available: https://k6.io/docs/
 
-[6] SQLite Consortium, "SQLite Documentation," *SQLite*. [Online]. Available: https://www.sqlite.org/docs.html
+[6] SQLite Consortium, "SQLite Documentation," _SQLite_. [Online]. Available: https://www.sqlite.org/docs.html
 
-[7] OpenJS Foundation, "Node.js Documentation," *Node.js*. [Online]. Available: https://nodejs.org/en/docs
+[7] OpenJS Foundation, "Node.js Documentation," _Node.js_. [Online]. Available: https://nodejs.org/en/docs
 
-[8] Expressjs.com, "Express — Node.js Web Application Framework," *Express Documentation*. [Online]. Available: https://expressjs.com/
+[8] Expressjs.com, "Express — Node.js Web Application Framework," _Express Documentation_. [Online]. Available: https://expressjs.com/
 
-[9] Web Performance Working Group, "HAR 1.2 Specification," *W3C Community Group*. [Online]. Available: https://w3c.github.io/web-performance/specs/HAR/Overview.html
+[9] Web Performance Working Group, "HAR 1.2 Specification," _W3C Community Group_. [Online]. Available: https://w3c.github.io/web-performance/specs/HAR/Overview.html
 
 [10] L. Q. Vu, "T05 — Performance Testing," Software Testing Seminar Track Brief, CS423/CSC15003, Faculty of Information Technology, University of Science, VNU-HCM, 2026.

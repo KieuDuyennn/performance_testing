@@ -49,6 +49,8 @@ mkdir -p "$SUB/05_AI_Audit_Pack/prompts"
 cp "report/[AI-02] - FIT@HCMUS - AI Audit Report_En.docx.md"          "$SUB/05_AI_Audit_Pack/[AI-02] - FIT@HCMUS - AI Audit Report_En.docx.md"
 cp "report/[AI-03] - FIT@HCMUS - AI Disclosure Form_En.docx.md"       "$SUB/05_AI_Audit_Pack/[AI-03] - FIT@HCMUS - AI Disclosure Form_En.docx.md"
 cp "report/[AI-04] - FIT@HCMUS - AI Reflective Statement_En.docx.md"  "$SUB/05_AI_Audit_Pack/[AI-04] - FIT@HCMUS - AI Reflective Statement_En.docx.md"
+# Signed PDF exports of the three forms (source of truth lives in report/ like the .md)
+cp report/\[AI-0*.docx.pdf "$SUB/05_AI_Audit_Pack/" 2>/dev/null || true
 cp "ai/prompts/prompts_log.md"        "$SUB/05_AI_Audit_Pack/prompts/prompts_log.md"
 # Raw per-member AI transcripts referenced by prompts_log.md
 cp -r "prompts" "$SUB/05_AI_Audit_Pack/prompts/transcripts"

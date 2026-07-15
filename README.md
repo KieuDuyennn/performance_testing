@@ -2,7 +2,7 @@
 
 Seminar project scaffold for **Software Testing (CS423/CSC15003, FIT HCMUS)**.
 
-- Topic: **T05 — Performance Testing**
+- Topic: **T05: Performance Testing**
 - SUT: **EShop backend (Node.js + SQLite)**
 - Traditional tools: **k6 (primary)** and **Apache JMeter (secondary)**
 - AI direction: Use an LLM to draft realistic k6 shopping scenarios from HTTP logs, then audit and refine the script
@@ -11,27 +11,33 @@ Seminar project scaffold for **Software Testing (CS423/CSC15003, FIT HCMUS)**.
 
 | Member | Student ID | Role |
 |---|---|---|
-| TODO | TODO | Coordinator |
-| TODO | TODO | Test Engineer |
-| TODO | TODO | Data & Reporting |
+| Lê Phạm Kiều Duyên | 23127184 | Coordinator |
+| Trần Nguyễn Khải Luân | 23127006 | Test Engineer |
+| Nguyễn Thành Tiến | 23127128 | Documentation Lead |
+| Nguyễn Bảo Duy | 23127179 | Data & Reporting |
 
 ## SLO Targets
 
 - **p95 latency < 500 ms**
 - **error rate < 1%**
 
-## Deliverables (S1–S8)
+## Deliverables (S1-S8)
+
+Stage numbers and file paths match `docs/00_Seminar_Master_Brief.md` section 3, the
+authoritative deliverables table synthesized from the instructor's own documents.
 
 | Deliverable | File | Status |
 |---|---|---|
-| S1 — Tool Survey & Proposal | `/docs/S1_Tool_Survey_Proposal.md` | TODO |
-| S2 — Demo Screencast | `/media/README.md` + external link | TODO |
-| S3 — Team Activity Log | `/docs/team_log.md` | TODO |
-| S4 — User Guide | `/docs/S4_User_Guide.md` | TODO |
-| S5 — Activity Worksheet | `/docs/S5_Activity_Worksheet.md` | TODO |
-| S6 — Seminar Slides | `/slides/.gitkeep` + `Seminar_Slides.pptx` | TODO |
-| S7 — Audience Feedback | `/docs/S7_Audience_Feedback_Aggregated.md` | TODO |
-| S8 — Final Reflection | `/docs/S8_Final_Reflection.md` | TODO |
+| S1: Tool Survey & Proposal | `report/S1_Tool_Survey_and_SLO_Extract.md` (Part A) | Done |
+| S3: Team Study Log | `docs/team_log.md` | Done |
+| S4: User Guide | `docs/User_Guide.md` (+ `.pdf`) | Done |
+| S4: Demo Screencast | `media/README.md` + external link | Done |
+| S5: Activity Worksheet | `docs/S5_Activity_Worksheet.md` | Done |
+| S6: Seminar Slides | `submission/02_Slides/Performance_Testing.pptx` | Done |
+| S7: Audience Feedback | `docs/S7_Audience_Feedback_Aggregated.md` | Done (form ready; aggregation filled after the live seminar) |
+| S8: AI Audit / Disclosure / Reflection | `report/[AI-02]/[AI-03]/[AI-04] - FIT@HCMUS ...docx.md` | Done |
+| S8: Final Reflection | `docs/S8_Final_Reflection.md` | Done |
+| SLO Report (baseline/spike numbers) | `report/report.md` section 11 + `report/S1_Tool_Survey_and_SLO_Extract.md` Part B | Done |
 
 ## Quick Start
 

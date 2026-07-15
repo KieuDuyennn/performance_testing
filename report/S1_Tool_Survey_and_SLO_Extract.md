@@ -1,21 +1,15 @@
-# S1: Tool Survey & Proposal / SLO Report (Extract)
+# S1: Tool Survey & Proposal / SLO Report
 
-> This file mixes two things. Part A's candidate list, rationale, and the paragraph
-> quoted from `report/report.md` are an extract, copied from Section 6 ("Tool Selection")
-> and Section 7.6 ("SLO Definition"). The 5-criteria comparison matrix below it is new
-> content added directly in this file (not in `report.md`, which does not have one), to
-> close the gap against the S1 rubric format. Part B is a straight extract from Section
-> 11 ("Experimental Results & Analysis"). Update `report/report.md` first for anything
-> that lives there, then regenerate the Part B tables here to match; the matrix in Part A
-> only needs updating if the team's actual tool choice or reasoning changes.
+*Companion document to `Report.md` (in `01_Report/`). Part A consolidates the tool
+survey; Part B consolidates the SLO results. Both align with Report.md Sections 6, 7.6,
+8.1, and 11.*
 
 ---
 
 ## Part A: Tool Survey & Proposal
 
-*Source: `report/report.md`, Section 6, plus a comparison matrix added here to match the
-S1 rubric format (`docs/00_Seminar_Master_Brief.md` §2.1/§4: at least 3 candidate tools,
-1 traditional plus 1 AI plus 1 fallback, scored across 5 criteria).*
+*Covers the S1 requirement: at least 3 candidate tools (1 traditional, 1 AI direction,
+1 fallback), scored across 5 criteria.*
 
 **Candidates considered:** k6 (selected as primary), Apache JMeter (selected as
 secondary), Locust (considered as a fallback, not chosen), and an LLM-assisted
@@ -54,27 +48,25 @@ secondary), Locust (considered as a fallback, not chosen), and an LLM-assisted
   tool with an AI direction, giving the team a real script to audit (report Section 10).
 
 > "Neither tool is assumed superior; Section 12 compares them using the results in
-> Section 11." (report.md §6)
+> Section 11." (Report.md Section 6)
 
 **AI Disclosure for this deliverable:** see `05_AI_Audit_Pack/[AI-02] ... AI Audit Report_En.docx.md`,
-row 2 ("Seminar Report: Tool Selection"), for how AI assisted in drafting the report's
-tool-selection paragraph, and note that the comparison matrix and Locust row above were
-added directly for this extract rather than pulled from that AI-assisted draft.
+row 2 ("Seminar Report: Tool Selection"), for how AI assisted in drafting the
+tool-selection rationale and how it was verified.
 
 ---
 
 ## Part B: SLO Report
 
-*Source: `report/report.md`, Section 7.6, Section 8.1, and Section 11. If those sections
-change, regenerate this part to match.*
+*Source: Report.md, Sections 7.6, 8.1, and 11.*
 
-### Target SLO (report.md Section 7.6)
+### Target SLO (Report.md Section 7.6)
 
 - p95 response time < 500 ms
 - p99 response time < 1000 ms
 - Error rate < 1%
 
-### Test Environment (report.md Section 8.1)
+### Test Environment (Report.md Section 8.1)
 
 | Item | Value |
 |---|---|
@@ -86,7 +78,7 @@ change, regenerate this part to match.*
 | k6 | v1.2.0 |
 
 The backend under test and the load generator ran on the same machine; this co-location
-is a known threat to validity discussed in report.md Section 13.
+is a known threat to validity discussed in Report.md Section 13.
 
 ### Baseline (50 VU)
 
@@ -117,7 +109,7 @@ Under the spike, p95 latency reached roughly three times the 500 ms target and p
 than double the 1000 ms target, a clear SLO breach on response time in both tools. The
 error rate stayed under the 1% ceiling: the system became slow rather than unreliable.
 
-### Analysis (report.md Section 11.3)
+### Analysis (Report.md Section 11.3)
 
 - **Bottleneck hypothesis:** since the whole test ran on a single machine, part of the
   degradation may come from OS resource contention between the load generators and the
@@ -132,7 +124,7 @@ error rate stayed under the 1% ceiling: the system became slow rather than unrel
 - **Cross-tool agreement:** the two tools' spike numbers track each other closely (p95
   differs by 60 ms, error rate by 0.1 percentage points), reinforcing that the
   degradation reflects EShop's behavior, not a quirk of either load generator.
-- **Measurement caveat (report.md Section 12.4):** both tools' default closed-loop VU
+- **Measurement caveat (Report.md Section 12.4):** both tools' default closed-loop VU
   model is subject to Coordinated Omission: when the SUT slows down, stuck VUs send
   fewer requests, which can make the report look more optimistic than what real users
   would experience. The mitigation is an open-model executor (k6's

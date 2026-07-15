@@ -153,12 +153,14 @@ A sudden increase: start at 50 VU, ramp to 500 VU over 30 seconds, hold for 2 mi
 
 | Item | Value |
 |---|---|
-| CPU | [TODO] |
-| RAM | [TODO] |
-| Operating System | [TODO] |
-| Node.js | [TODO] |
-| Apache JMeter | [TODO] |
-| k6 | [TODO] |
+| CPU | Intel Core i7-10510U @ 1.80 GHz (4 cores / 8 threads) |
+| RAM | 8 GB |
+| Operating System | Windows 11 Home Single Language |
+| Node.js | v24.4.1 |
+| Apache JMeter | 5.6.3 |
+| k6 | v1.2.0 |
+
+The backend under test and the load generator ran on the same machine; this co-location is a known threat to validity discussed in Section 13.
 
 ### 8.2 Baseline Test
 
@@ -242,7 +244,7 @@ An LLM was used to draft a "realistic shopping" k6 script from a captured HTTP l
 
 ### 10.3 Human Review Process
 
-Every AI-generated script was reviewed against the real system before use. The endpoint and authentication fixes above were verified and applied directly. [TODO: add remaining review evidence once finalized.]
+Every AI-generated script was reviewed against the real system before use. The endpoint and authentication fixes above were verified and applied directly. The full artifact-by-artifact review record, including verdicts and the verification source used for each correction, is documented in the attached AI Audit Report ([AI-02]).
 
 ---
 

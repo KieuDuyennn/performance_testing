@@ -4,25 +4,33 @@
 
 ### AI POLICY · TEMPLATES — 2026 v1.0
 
-# AI Use Disclosure Form
+# AI Use Disclosure Form — Seminar (Team Edition)
 
-*Attach to assignments where AI was used in any permitted capacity.*
+*Attach to the Seminar deliverable, Topic T05 — Performance Testing. Consistent with the AI Audit Report ([AI-02]).*
 
-*Adapted from Med Kharbach, PhD (2026) — AI Use Policy Templates for Higher Education. CC BY-NC-SA 4.0. This adaptation is prepared for FIT@HCMUS – CS423 / CSC15003 Software Testing course.*
+*Adapted from Med Kharbach, PhD (2026) — AI Use Policy Templates for Higher Education. CC BY-NC-SA 4.0. This adaptation is prepared for FIT@HCMUS – CS423 / CSC15003 Software Testing course. The individual-assignment template has been adapted for a team seminar deliverable, per course guidance that Seminar Track work is disclosed at the team level.*
 
 ---
 
-## 1. Course & Student Info
+## 1. Course & Team Info
 
 | Field | Value |
 |---|---|
 | **Course:** | CS423 / CSC13003 – Software Testing |
-| **Assignment ID:** | |
-| **Assignment Title:** | |
-| **AI Use Category (1–5):** | Category ____ |
-| **Date:** | |
-| **Student name:** | |
-| **Student ID:** | |
+| **Team:** | Team 09 |
+| **Assignment ID:** | Seminar (S1–S8) — AI-03 Disclosure Form |
+| **Assignment Title:** | T05 — Performance Testing (Seminar Report, User Guide, and supporting deliverables) |
+| **AI Use Category (1–5):** | Category 5 — AI-Integrated Work |
+| **Date:** | 2026-07-15 |
+
+### Team Members
+
+| Student ID | Full Name |
+|---|---|
+| 23127006 | Trần Nguyễn Khải Luân |
+| 23127128 | Nguyễn Thành Tiến |
+| 23127179 | Nguyễn Bảo Duy |
+| 23127184 | Lê Phạm Kiều Duyên |
 
 ---
 
@@ -30,77 +38,77 @@
 
 ### 1. AI tool(s) used:
 
-*List every AI tool used for this assignment (e.g., AI Tool (e.g., ChatGPT, Claude, Gemini), ChatGPT, GitHub Copilot, Cursor, Gemini).*
-
-*(Write your answer here.)*
+Claude (used via Claude Code), ChatGPT, and Gemini.
 
 ---
 
 ### 2. Stage(s) of the assignment where AI was used:
 
-*Tick all that apply:*
+*Ticked at the team level, across the Seminar Report and User Guide:*
 
-- [ ] brainstorming
-- [ ] outlining
-- [ ] drafting
-- [ ] feedback
-- [ ] revision
-- [ ] coding
+- [x] brainstorming
+- [x] outlining
+- [x] drafting
+- [x] feedback
+- [x] revision
+- [x] coding
 - [ ] data analysis
 - [ ] visual design
-- [ ] other (specify): ________________
+- [ ] other
 
-*(Additional notes here.)*
+AI was used to draft and restructure document sections, propose tool-comparison and workload-design options, and design test procedure and configuration steps for JMeter and k6 (e.g., authentication handling, workload staging). AI did not generate experimental measurements. The interpretation of experimental results was reviewed by the team before inclusion.
 
 ---
 
 ### 3. Main prompts or tasks given to the AI:
 
-*Paste the 2–3 most impactful prompts verbatim. For the full transcript, attach Appendix A (prompt_log.md).*
+*Representative AI requests are shown below.*
 
-*(Write your prompts here.)*
+1. Draft the seminar report structure from the approved project artifacts and course brief, marking any unmeasured result explicitly rather than estimating it.
+2. Explain the concurrency behavior of the database used by the system under test, and verify the explanation against the actual implementation before it is documented.
+3. Design the end-to-end test walkthrough for both tools, re-verifying the authentication mechanism against the real implementation before writing the steps.
 
 ---
 
 ### 4. Specific parts of the work AI contributed to:
 
-*Be specific. Example: 'AI generated TC01–TC15 in Section 3.2; I rewrote TC04 and TC11; AI did NOT contribute to Sections 1, 2, 4, or the AI Critique.'*
-
-*(Write your answer here.)*
+AI contributed to drafting the Seminar Report's structure, tool-selection rationale, Live Demo script, and reference list, and to drafting User Guide sections covering the system introduction, the first end-to-end test walkthrough, advanced tool configuration, and failure-mode analysis. The team defined the SLO targets and testing scope per the seminar brief. The workload model was developed by the team with AI assistance during drafting and refinement; final decisions remained with the team. Experimental measurements came from actual tool execution, and AI-assisted interpretations were reviewed by the team before inclusion. Full attribution and verdicts per artifact are documented in [AI-02].
 
 ---
 
-### 5. How I reviewed, revised, or verified the AI output:
+### 5. How the team reviewed, revised, or verified the AI output:
 
-*Describe your verification method (ran the test, checked the spec, asked the TA, looked up RFC, cross-checked with the ISTQB syllabus, etc.).*
-
-*(Write your answer here.)*
+Every AI-drafted technical claim about the system under test (e.g., database concurrency behavior, the authentication mechanism, tool-specific configuration requirements) was checked against the project's actual implementation before inclusion. Tool-related and process claims were checked against official documentation and the T05 seminar brief. The Live Demo script was reviewed using an additional AI tool before the team finalized it. All AI output was read and revised by the team before being written into a deliverable; corrections made at each step are recorded in [AI-02].
 
 ---
 
-### 6. Citation (if required by course style guide):
+### 6. Citation (IEEE style):
 
-*Software Testing uses the IEEE style. Example: Anthropic. (2026). AI Tool (e.g., ChatGPT, Claude, Gemini) [Large language model]. https://claude.ai*
-
-*(Write your citations here.)*
+- Anthropic. (2026). *Claude* (Claude Code) [Large language model]. https://claude.ai
+- OpenAI. (2026). *ChatGPT* [Large language model]. https://chatgpt.com
+- Google. (2026). *Gemini* [Large language model]. https://gemini.google.com
 
 ---
 
 ## 3. Statement of Honesty
 
-*By signing below, I confirm that the disclosure above is accurate and complete. I understand that undisclosed or false disclosure of AI use is treated as academic misconduct and may result in a 0 grade for the assignment and disciplinary referral.*
+*By signing below, each team member confirms that the disclosure above is accurate and complete for the team's Seminar deliverable. We understand that undisclosed or false disclosure of AI use is treated as academic misconduct and may result in a 0 grade for the assignment and disciplinary referral.*
 
-### Signature
+### Signatures
+
+| Student ID | Full Name | Signature | Date |
+|---|---|---|---|
+| 23127006 | Trần Nguyễn Khải Luân | | |
+| 23127128 | Nguyễn Thành Tiến | | |
+| 23127179 | Nguyễn Bảo Duy | | |
+| 23127184 | Lê Phạm Kiều Duyên | | |
 
 | Field | Value |
 |---|---|
-| **Student name (printed):** | |
-| **Student ID:** | |
-| **Class / Cohort:** | |
 | **Course:** | CS423 / CSC13003 – Software Testing |
-| **Instructor:** | |
-| **Date:** | |
-| **Signature:** | |
+| **Instructor:** | Dr. Lâm Quang Vũ, MSc. Trương Phước Lộc |
+| **Seminar:** | T05 — Performance Testing (Team 09) |
+| **Date:** | 2026-07-15 |
 
 ---
 

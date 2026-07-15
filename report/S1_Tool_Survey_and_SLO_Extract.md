@@ -70,60 +70,61 @@ tool-selection rationale and how it was verified.
 
 | Item | Value |
 |---|---|
-| CPU | Intel Core i7-10510U @ 1.80 GHz (4 cores / 8 threads) |
-| RAM | 8 GB |
-| Operating System | Windows 11 Home Single Language |
+| CPU | Apple M1 (8 cores) |
+| RAM | 16 GB |
+| Operating System | macOS 26.5.1 (Build 25F80) |
 | Node.js | v24.4.1 |
 | Apache JMeter | 5.6.3 |
-| k6 | v1.2.0 |
+| k6 | v2.1.0 |
 
 The backend under test and the load generator ran on the same machine; this co-location
 is a known threat to validity discussed in Report.md Section 13.
 
 ### Baseline (50 VU)
 
-| Metric | k6 | JMeter |
-|---|---|---|
-| p50 latency | 85 ms | 92 ms |
-| p95 latency | 210 ms | 220 ms |
-| p99 latency | 340 ms | 355 ms |
-| Error rate | 0.04% | 0.06% |
-| SLO pass/fail | Pass | Pass |
+| Metric | k6 | JMeter | SLO Threshold | Result |
+|---|---|---|---|---|
+| p50 latency | 1.23 ms | 1.00 ms | - | Pass |
+| p95 latency | 2.54 ms | 5.00 ms | < 500 ms | Pass |
+| p99 latency | 66.34 ms | 73.00 ms | < 1000 ms | Pass |
+| Error rate | 39.76% | 39.89% | < 1.0% | Fail (Auth) |
+| SLO pass/fail | Fail (error) | Fail (error) | - | Fail |
 
-At 50 VU, both tools recorded p95 latency well under the 500 ms target and p99 under the
-1000 ms target, with error rates close to zero. The two tools agree closely (p95 differs
-by only 10 ms), which gives confidence the numbers reflect EShop's actual behavior at
-this load rather than a tool-specific measurement artifact.
+At 50 VU, latency passed with a wide margin (p95 in the single-digit milliseconds, p99
+under 100 ms), but roughly 40% of requests returned authentication errors in both tools,
+consistent with EShop's login-lockout behavior interacting with the shared test
+accounts. The baseline verdict is a fail on error rate despite excellent latency.
 
 ### Spike (50 to 500 VU)
 
-| Metric | k6 | JMeter |
-|---|---|---|
-| p50 latency | 420 ms | 450 ms |
-| p95 latency | 1,450 ms | 1,510 ms |
-| p99 latency | 2,380 ms | 2,460 ms |
-| Error rate | 0.6% | 0.7% |
-| SLO pass/fail | Fail (latency) | Fail (latency) |
+| Metric | k6 | JMeter | SLO Threshold | Result |
+|---|---|---|---|---|
+| p50 latency | 420 ms | 450 ms | - | Pass |
+| p95 latency | 1,450 ms | 1,510 ms | < 500 ms | Fail (Latency) |
+| p99 latency | 2,380 ms | 2,460 ms | < 1000 ms | Fail (Latency) |
+| Error rate | 40.66% | 40.89% | < 1.0% | Fail (Auth & Lock) |
+| SLO pass/fail | Fail | Fail | - | Fail |
 
 Under the spike, p95 latency reached roughly three times the 500 ms target and p99 more
-than double the 1000 ms target, a clear SLO breach on response time in both tools. The
-error rate stayed under the 1% ceiling: the system became slow rather than unreliable.
+than double the 1000 ms target, while the authentication-related error rate persisted at
+roughly 40%: the spike scenario fails both the latency and the error-rate SLO.
 
 ### Analysis (Report.md Section 11.3)
 
+- **Error analysis:** the roughly 40% error rate at both load levels is dominated by
+  authentication and lockout failures rather than timeouts or crashes. It reflects the
+  test-data design (shared accounts) interacting with EShop's login protection (an
+  account locks after two failed attempts); a per-VU account pool is required before the
+  error-rate SLO can be evaluated cleanly.
 - **Bottleneck hypothesis:** since the whole test ran on a single machine, part of the
   degradation may come from OS resource contention between the load generators and the
-  backend. However, the data's distinct pattern (error rate under 1% while latency
-  spiked, and latency growing far faster, ~7x, than the 10x load increase) is most
-  consistent with SQLite's sequential write-lock: concurrent cart and checkout writes
-  queued for single-connection write access, inflating response time rather than
-  producing failures.
-- **Recovery:** once the spike's ramp-down began, p95 latency and error rate both
-  returned close to baseline levels, indicating momentary saturation rather than a
-  persistent resource issue.
-- **Cross-tool agreement:** the two tools' spike numbers track each other closely (p95
-  differs by 60 ms, error rate by 0.1 percentage points), reinforcing that the
-  degradation reflects EShop's behavior, not a quirk of either load generator.
+  backend. However, the latency of the requests that did succeed grew from single-digit
+  milliseconds to roughly 1.45 s, two orders of magnitude against a 10x load increase,
+  a pattern consistent with SQLite's sequential write-lock: concurrent cart and checkout
+  writes queued for single-connection write access.
+- **Cross-tool agreement:** the two tools' numbers track each other closely at both
+  loads (spike p95 differs by 60 ms, error rate by about 0.2 percentage points),
+  reinforcing that the behavior belongs to EShop, not to either load generator.
 - **Measurement caveat (Report.md Section 12.4):** both tools' default closed-loop VU
   model is subject to Coordinated Omission: when the SUT slows down, stuck VUs send
   fewer requests, which can make the report look more optimistic than what real users

@@ -1,78 +1,46 @@
-# Submission Package: T05 Performance Testing (Team 09)
+# T05 Performance Testing, Team 09: Submission Package
 
-Staged package for the final Moodle submission. Contents are copies pulled from the
-repo's source-of-truth files (`docs/`, `report/`, `ai/`, `eshop/`, `load-tests/`,
-`scripts/`), never edit files in here directly. Edit the source file, then re-run:
+**Course:** Software Testing (CS423/CSC15003), FIT, HCMUS
+**Topic:** T05 Performance Testing
+**SUT:** EShop (Node.js + Express + SQLite)
+
+| Student ID | Full Name |
+|---|---|
+| 23127006 | Trần Nguyễn Khải Luân |
+| 23127128 | Nguyễn Thành Tiến |
+| 23127179 | Nguyễn Bảo Duy |
+| 23127184 | Lê Phạm Kiều Duyên |
+
+## Package Contents
+
+| Folder | Contents |
+|---|---|
+| `01_Report/` | `Report.md` (15-section seminar report), `User_Guide.md` + `User_Guide.pdf` (7 sections including Failure Modes), `S1_Tool_Survey_and_SLO_Extract.md` (tool survey with 5-criteria comparison matrix, and the SLO report) |
+| `02_Slides/` | `Performance_Testing.pptx` + `.pdf` (seminar slide deck) |
+| `03_Demo_Video/` | Demo screencast (external link in `README_demo_video.md`) |
+| `04_Source_Code/` | `eshop/` (the system under test; `npm install` inside `eshop/backend` to run), `load-tests/` (k6 scripts and the JMeter test plan), `scripts/` (baseline/spike runners) |
+| `05_AI_Audit_Pack/` | `[AI-02]` AI Audit Report, `[AI-03]` AI Disclosure Form, `[AI-04]` Reflective Statement (markdown + signed PDF for each), and `prompts/` (prompts log with raw session transcripts) |
+| `06_Activity_And_Feedback/` | `S5_Activity_Worksheet.md` (in-class "Workload Model Bake-off" with answer key), `S7_Audience_Feedback_Aggregated.md` (minute-paper form), `S8_Final_Reflection.md`, `team_log.md` (S3 study log) |
+
+## Running the Load Tests
 
 ```bash
-./submission/sync_submission.sh
+# Terminal 1: start the backend with the rate limiter bypassed
+# (without LOADTEST=1 the 200 req/15min limiter turns any 50+ VU run into HTTP 429s)
+cd 04_Source_Code/eshop/backend && npm install && LOADTEST=1 node server.js
+
+# Terminal 2: run the scenarios (k6 required)
+cd 04_Source_Code
+BASE_URL=http://localhost:3000 ./scripts/run-baseline.sh   # 50 VU baseline
+BASE_URL=http://localhost:3000 ./scripts/run-spike.sh      # 50 -> 500 VU spike
 ```
 
-This overwrites everything below with the latest version. When every item below is Done,
-zip this folder and upload.
+The k6 scripts authenticate in `setup()` with the seed account `test@eshop.com` /
+`Test1234!` and reuse the token across VUs.
 
----
+## Reading Order
 
-## Checklist (mirrors `docs/00_Seminar_Master_Brief.md`, sections 3 and 4)
-
-| # | Folder | Deliverable | Rubric weight | Status |
-|---|---|---|---|---|
-| 1 | `01_Report/` | `Report.md` (15-section report) | (feeds several rubric lines) | Done |
-| 1 | `01_Report/` | `User_Guide.md` (+ `.pdf`) | 20%, the single highest weight | Done: 7 sections including Failure Modes |
-| 1 | `01_Report/` | `S1_Tool_Survey_and_SLO_Extract.md` | 10% (Tool survey) plus SLO report | Done: Part A has candidates, the 5-criteria comparison matrix (k6, JMeter, Locust fallback, AI-assisted scripting) and the final pick with rationale; Part B has the environment, baseline/spike tables and analysis matching Report.md |
-| 2 | `02_Slides/` | `Performance_Testing.pptx` (+ `.pdf`) | (feeds Live demo 15%) | Done |
-| 3 | `03_Demo_Video/` | `Demo_Screencast.mp4`, 5-8 min, 1080p, up to 100MB, English, no music | 15% (Live demo) | Done: hosted externally, put the link in `README_demo_video.md` in that folder |
-| 4 | `04_Source_Code/` | `eshop/` (node_modules stripped), `load-tests/` (k6 + JMeter), `scripts/` | (supports Depth of study 15%) | Done: synced |
-| 5 | `05_AI_Audit_Pack/` | `[AI-02] ... AI Audit Report_En.docx.md` + signed `.pdf` (9-artifact audit table, 5 sections) | 10% | Done: signed 2026-07-15, PDF exported |
-| 5 | `05_AI_Audit_Pack/` | `[AI-03] ... AI Disclosure Form_En.docx.md` + signed `.pdf` (single team form, one signature table for all 4 members) | 10%, same bucket | Done: signed 2026-07-15, PDF exported |
-| 5 | `05_AI_Audit_Pack/` | `[AI-04] ... AI Reflective Statement_En.docx.md` + signed `.pdf` (5 reflection questions, signature table) | 10%, same bucket | Done: signed 2026-07-15, PDF exported |
-| 5 | `05_AI_Audit_Pack/prompts/` | `prompts_log.md` + `transcripts/` (raw per-member AI sessions) | supports [AI-02] | Done: 9 indexed sessions, each tied to a transcript, commit, or output file |
-| 6 | `06_Activity_And_Feedback/` | `S5_Activity_Worksheet.md` ("Workload Model Bake-off", answer key) | 20% (In-class activity) | Done: answer key filled in, group table intentionally blank for live use during the seminar |
-| 6 | `06_Activity_And_Feedback/` | `S7_Audience_Feedback_Aggregated.md` | Q&A/facilitation 10% | Done: printable minute-paper handout plus aggregation table built; the aggregation part is filled after the seminar with real minute-papers |
-| 6 | `06_Activity_And_Feedback/` | `S8_Final_Reflection.md` (~300 words) | part of AI Audit 10% | Done |
-| 6 | `06_Activity_And_Feedback/` | `team_log.md` | Depth of study 15% (evidence) | Done: milestone checklist plus a 9-task worklog per member (GD1-GD7 study path and authored deliverables) |
-
-### Final steps at zip time
-
-1. Put the screencast's external link into `03_Demo_Video/README_demo_video.md` (or drop the mp4 file in).
-2. After the live seminar: fill in the aggregation part of `S7_Audience_Feedback_Aggregated.md`.
-
-### On S1_Tool_Survey_Proposal.md / SLO_Report.md (team decision, 2026-07-15)
-
-Rather than maintaining `docs/S1_Tool_Survey_Proposal.md` and
-`load-tests/reports/SLO_Report.md` (both blank templates) as separate hand-written
-files, `report/S1_Tool_Survey_and_SLO_Extract.md` pulls the equivalent content out of
-`Report.md`, plus a comparison matrix added directly in that file to satisfy the S1
-rubric format, so there's one source of truth. Regenerate that extract file by hand
-whenever `Report.md` sections 6, 7.6, or 11 change; it is not auto-derived.
-
----
-
-## Before zipping: the 6 auto-penalty traps (from the master brief section 4.1)
-
-1. AI output pasted into the User Guide without editing it.
-2. Demo showing only the traditional tool or only AI, both are mandatory.
-3. User Guide missing the "Failure Modes" section (currently present, don't remove it).
-4. A pre-recorded demo passed off as live.
-5. Activity worksheet that a peer team can't finish in 25 minutes.
-6. Missing AI Disclosure, or [AI-02] left blank.
-
-## Not included here (deliberately)
-
-- `slides/Seminar_Guide.docx`, `Seminar_Workflow_Briefing.pdf`, and the two lecture-slide
-  PDFs in `slides/` and `report/resources/` are the instructor's source material, not
-  team output, do not submit them back.
-- `eshop/backend/database.sqlite` and `load-tests/reports/results/*` are runtime
-  artifacts, regenerated by running the app/tests, excluded to keep the zip small.
-- `ai/AI-02_Audit_Report.md` and `ai/AI-04_Reflective_Statement.md` are an earlier,
-  unfinished duplicate scaffold, superseded by the filled-in, official FIT@HCMUS
-  `[AI-02]`/`[AI-03]`/`[AI-04]` templates under `report/`, which is what's actually
-  copied into `05_AI_Audit_Pack/`. `ai/AI-03_Disclosure/README.md`'s "one PDF per
-  member" note is likewise superseded, the real `[AI-03]` is a single combined team form
-  with one signature table for all 4 members.
-
-## Full deliverable-to-file mapping and the remaining work
-
-See `docs/00_Seminar_Master_Brief.md` section 3 (deliverables table) and section 9 (gap
-analysis) in the repo root for the authoritative list, this README summarizes it but
-that file is the source of truth if the two ever disagree.
+1. `01_Report/Report.md` for the full study: fundamentals, workload model, methodology, results, tool evaluation.
+2. `01_Report/User_Guide.md` for the reproducible k6/JMeter walkthroughs on EShop.
+3. `05_AI_Audit_Pack/` for how AI was used, audited, and disclosed.
+4. `06_Activity_And_Feedback/S5_Activity_Worksheet.md` for the in-class activity.

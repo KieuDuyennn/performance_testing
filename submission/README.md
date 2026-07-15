@@ -23,10 +23,10 @@ zip this folder and upload.
 | 2 | `02_Slides/` | `Performance_Testing.pptx` (+ `.pdf`) | (feeds Live demo 15%) | Done |
 | 3 | `03_Demo_Video/` | `Demo_Screencast.mp4`, 5-8 min, 1080p, up to 100MB, English, no music | 15% (Live demo) | Done: hosted externally, put the link in `README_demo_video.md` in that folder |
 | 4 | `04_Source_Code/` | `eshop/` (node_modules stripped), `load-tests/` (k6 + JMeter), `scripts/` | (supports Depth of study 15%) | Done: synced |
-| 5 | `05_AI_Audit_Pack/` | `[AI-02] ... AI Audit Report_En.docx.md` (9-artifact audit table, 5 sections) | 10% | Done: signed 2026-07-15 |
-| 5 | `05_AI_Audit_Pack/` | `[AI-03] ... AI Disclosure Form_En.docx.md` (single team form, one signature table for all 4 members) | 10%, same bucket | Done: signed 2026-07-15 |
-| 5 | `05_AI_Audit_Pack/` | `[AI-04] ... AI Reflective Statement_En.docx.md` (5 reflection questions, signature table) | 10%, same bucket | Done: signed 2026-07-15 |
-| 5 | `05_AI_Audit_Pack/prompts/` | `prompts_log.md` + `transcripts/` (raw per-member AI sessions) | supports [AI-02] | Done: 4 indexed sessions with links to the raw transcripts |
+| 5 | `05_AI_Audit_Pack/` | `[AI-02] ... AI Audit Report_En.docx.md` + signed `.pdf` (9-artifact audit table, 5 sections) | 10% | Done: signed 2026-07-15, PDF exported |
+| 5 | `05_AI_Audit_Pack/` | `[AI-03] ... AI Disclosure Form_En.docx.md` + signed `.pdf` (single team form, one signature table for all 4 members) | 10%, same bucket | Done: signed 2026-07-15, PDF exported |
+| 5 | `05_AI_Audit_Pack/` | `[AI-04] ... AI Reflective Statement_En.docx.md` + signed `.pdf` (5 reflection questions, signature table) | 10%, same bucket | Done: signed 2026-07-15, PDF exported |
+| 5 | `05_AI_Audit_Pack/prompts/` | `prompts_log.md` + `transcripts/` (raw per-member AI sessions) | supports [AI-02] | Done: 9 indexed sessions, each tied to a transcript, commit, or output file |
 | 6 | `06_Activity_And_Feedback/` | `S5_Activity_Worksheet.md` ("Workload Model Bake-off", answer key) | 20% (In-class activity) | Done: answer key filled in, group table intentionally blank for live use during the seminar |
 | 6 | `06_Activity_And_Feedback/` | `S7_Audience_Feedback_Aggregated.md` | Q&A/facilitation 10% | Done: printable minute-paper handout plus aggregation table built; the aggregation part is filled after the seminar with real minute-papers |
 | 6 | `06_Activity_And_Feedback/` | `S8_Final_Reflection.md` (~300 words) | part of AI Audit 10% | Done |
@@ -35,8 +35,7 @@ zip this folder and upload.
 ### Final steps at zip time
 
 1. Put the screencast's external link into `03_Demo_Video/README_demo_video.md` (or drop the mp4 file in).
-2. Export the signed `[AI-03]` and `[AI-04]` to PDF alongside the markdown.
-3. After the live seminar: fill in the aggregation part of `S7_Audience_Feedback_Aggregated.md`.
+2. After the live seminar: fill in the aggregation part of `S7_Audience_Feedback_Aggregated.md`.
 
 ### On S1_Tool_Survey_Proposal.md / SLO_Report.md (team decision, 2026-07-15)
 

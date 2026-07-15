@@ -98,10 +98,10 @@ Every AI-drafted technical claim about the system under test (e.g., database con
 
 | Student ID | Full Name | Signature | Date |
 |---|---|---|---|
-| 23127006 | Trần Nguyễn Khải Luân | | |
-| 23127128 | Nguyễn Thành Tiến | | |
-| 23127179 | Nguyễn Bảo Duy | | |
-| 23127184 | Lê Phạm Kiều Duyên | | |
+| 23127006 | Trần Nguyễn Khải Luân | Trần Nguyễn Khải Luân_đã ký | 2026-07-15 |
+| 23127128 | Nguyễn Thành Tiến | Nguyễn Thành Tiến_đã ký | 2026-07-15 |
+| 23127179 | Nguyễn Bảo Duy | Nguyễn Bảo Duy_đã ký | 2026-07-15 |
+| 23127184 | Lê Phạm Kiều Duyên | Lê Phạm Kiều Duyên_đã ký | 2026-07-15 |
 
 | Field | Value |
 |---|---|
